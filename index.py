@@ -43,23 +43,27 @@ class DatabaseManager:
             
             # creates tables
             cursor.execute('''
-                CREATE TABLE users (
+                CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT UNIQUE NOT NULL,
                     password_hash TEXT NOT NULL,
                     is_admin BOOLEAN DEFAULT 0,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     last_login DATETIME
-                )
-
-                CREATE TABLE predators (
+                )''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS predators (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
+                    address TEXT,
+                    phone TEXT,
+                    email TEXT,
                     description TEXT,
+                    convicted BOOLEAN DEFAULT 0,
+                    socials TEXT,
                     face_image_url TEXT,
-                    born_at DATETIME,
-                )
-            ''')
+                    born_at DATETIME
+                );''')
             
             conn.commit()
             print(f"{Fore.GREEN}[+] Database schema created successfully.{Style.RESET_ALL}")
@@ -231,6 +235,36 @@ class DatabaseManager:
             return False
         except sqlite3.Error as e:
             print(f"{Fore.RED}[-] Error adding user: {e}{Style.RESET_ALL}")
+            return 
+        
+    def add_predator(self, name, description, face_image_url, born_at):
+        """
+        Add a new predator to the database.
+
+        Args:
+            name (str): Name of the predator.
+            description (str): Description of the predator.
+            face_image_url (str): URL of the predator's face image.
+            born_at (str): Date and time when the predator was born.
+
+        Returns:
+            bool: True if the predator was added successfully, False otherwise.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO predators (name, description, face_image_url, born_at)
+                VALUES (?, ?, ?, ?)
+            ''', (name, description, face_image_url, born_at))
+            
+            conn.commit()
+            conn.close()
+            return True
+            
+        except sqlite3.Error as e:
+            print(f"{Fore.RED}[-] Error adding predator: {e}{Style.RESET_ALL}")
             return False
         
     def delete_user(self, user_id):
@@ -292,7 +326,7 @@ def index():
         else:
             print(f"{Fore.RED}[-] Invalid login attempt: {username}{Style.RESET_ALL}")
             flash('Invalid credentials')
-            return redirect(url_for('/'))
+            return redirect(url_for('index'))
         
     return flask.render_template('index.html')
 
@@ -388,21 +422,40 @@ def add_predator():
         return redirect(url_for('predators'))
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
+        address = request.form.get('address', '').strip()
+        phone = request.form.get('phone', '').strip()
+        email = request.form.get('email', '').strip()
         description = request.form.get('description', '').strip()
         face_image_url = request.form.get('face_image_url', '').strip()
         born_at = request.form.get('born_at', '').strip()
         
-        if not name or not description or not face_image_url or not born_at:
-            flash('All fields are required')
-            return redirect(url_for('add_predator'))
-        
-        # Here you would typically save the predator to the database
-        # For now, we will just print it
-        print(f"Adding predator: {name}, {description}, {face_image_url}, {born_at}")
+        if request.method == 'POST':
+            if not name or not description or not face_image_url or not born_at:
+                flash('All fields are required')
+                return redirect(url_for('add_predator'))
+            
+            if db.add_predator(name, description, face_image_url, born_at, address, phone, email):
+                flash(f'Predator {name} added successfully')
+            else:
+                flash(f'Failed to add predator {name}')
         
         flash(f'Predator {name} added successfully')
         return redirect(url_for('predators'))
     return flask.render_template('database/add_db.html')
+
+@app.route('/predators/delete/<int:predator_id>', methods=['POST'])
+@login_required
+def delete_predator(predator_id):
+    user = current_user
+    if not user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('predators'))
+    
+
+    print(f"Deleting predator with ID: {predator_id}")
+    
+    flash(f'Predator with ID {predator_id} deleted successfully')
+    return redirect(url_for('predators'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

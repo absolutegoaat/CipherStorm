@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherStorm - Database</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>CipherStorm</h1>
+
+        <div class="navigation">
+            <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Home</button>
+            </form>
+            {% if current_user.is_admin %}
+                <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage Users</button>
+                </form>
+            {% endif %}
+            <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Predator Database</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Face Image</th>
+                    <th>Born At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for predator in predators %}
+                <tr>
+                    <td>{{ predator.id }}</td>
+                    <td>{{ predator.name }}</td>
+                    <td>{{ predator.description }}</td>
+                    <td><img src="{{ predator.face_image_url }}" alt="Face Image" width="100"></td>
+                    <td>{{ predator.born_at }}</td>
+                    <td>
+                        <button href="/edit/{{ predator.id }}">Edit</button>
+                        {% if current_user.is_admin %}
+                        <button href="/delete/{{ predator.id }}">Delete</button>
+                        {% endif %}
+                        <button href="/view/{{ predator.id }}">View</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

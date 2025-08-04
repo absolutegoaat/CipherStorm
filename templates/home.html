@@ -28,7 +28,7 @@
     <div class="main-content">
         <h1>Welcome to CipherStorm</h1>
         <p>Current User: {{ current_user.username }}</p>
-        <button type="button" onclick="{{ url_for('db') }}">View Database</button>
+        <button type="button" onclick="window.location.href='{{ url_for('predators') }}'">View Database</button>
     </div>
 </body>
 </html>
