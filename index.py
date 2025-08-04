@@ -267,6 +267,63 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error adding predator: {e}{Style.RESET_ALL}")
             return False
         
+    def get_all_predators(self):
+        """
+        Get all predators from the database.
+
+        Returns:
+            list: List of dictionaries containing predator data.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT * FROM predators')
+            rows = cursor.fetchall()
+            conn.close()
+            
+            predators = []
+            for row in rows:
+                predators.append({
+                    'id': row[0],
+                    'name': row[1],
+                    'address': row[2],
+                    'phone': row[3],
+                    'email': row[4],
+                    'description': row[5],
+                    'convicted': bool(row[6]),
+                    'socials': row[7],
+                    'face_image_url': row[8],
+                    'born_at': row[9]
+                })
+            
+            return predators
+            
+        except sqlite3.Error as e:
+            print(f"{Fore.RED}[-] Error getting all predators: {e}{Style.RESET_ALL}")
+            return []
+    
+    def delete_predator(self, predator_id):
+        """
+        Delete a predator by ID.
+
+        Args:
+            predator_id (int): The ID of the predator to delete.
+
+        Returns:
+            bool: True if the predator was deleted successfully, False otherwise.
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM predators WHERE id = ?', (predator_id,))
+            conn.commit()
+            conn.close()
+            return True
+        except sqlite3.Error as e:
+            print(f"{Fore.RED}[-] Error deleting predator: {e}{Style.RESET_ALL}")
+            return False
+        
     def delete_user(self, user_id):
         """
         Delete a user by ID.
@@ -410,37 +467,39 @@ def delete_user(user_id):
 def predators():
     user = current_user
     if user.is_admin:
-        predators = []
+        predators = db.get_all_predators()
         return flask.render_template('database/db.html', predators=predators)
+    else:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
     
 @app.route('/predators/add', methods=['GET', 'POST'])
 @login_required
 def add_predator():
-    user = current_user
-    if not user.is_admin:
-        flash('Access denied.')
-        return redirect(url_for('predators'))
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
         address = request.form.get('address', '').strip()
         phone = request.form.get('phone', '').strip()
         email = request.form.get('email', '').strip()
         description = request.form.get('description', '').strip()
+        socials = request.form.get('socials', '').strip()
         face_image_url = request.form.get('face_image_url', '').strip()
         born_at = request.form.get('born_at', '').strip()
+        convicted = request.form.get('convicted', 'off') == 'on'
         
         if request.method == 'POST':
             if not name or not description or not face_image_url or not born_at:
                 flash('All fields are required')
                 return redirect(url_for('add_predator'))
             
-            if db.add_predator(name, description, face_image_url, born_at, address, phone, email):
+            if db.add_predator(name, description, face_image_url, born_at, address, phone, email, convicted, socials):
                 flash(f'Predator {name} added successfully')
             else:
                 flash(f'Failed to add predator {name}')
         
         flash(f'Predator {name} added successfully')
         return redirect(url_for('predators'))
+    
     return flask.render_template('database/add_db.html')
 
 @app.route('/predators/delete/<int:predator_id>', methods=['POST'])
@@ -451,6 +510,11 @@ def delete_predator(predator_id):
         flash('Access denied.')
         return redirect(url_for('predators'))
     
+    if request.method == 'POST':
+        if db.delete_predator(predator_id):
+            flash(f'Predator with ID {predator_id} deleted successfully')
+        else:
+            flash(f'Failed to delete predator with ID {predator_id}')
 
     print(f"Deleting predator with ID: {predator_id}")
     

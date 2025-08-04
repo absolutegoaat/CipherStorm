@@ -10,7 +10,7 @@
     <div class="main-content">
         <h1>Add Predator</h1>
         <form action="/add" method="post" enctype="multipart/form-data">
-            <label for="name">Name:</label>
+            <label for="name">Name/Username:</label>
             <input type="text" id="name" name="name" required>
 
             <label for="address">Address:</label>
@@ -26,15 +26,18 @@
             <textarea id="description" name="description"></textarea>
 
             <label for="born_at">Born At:</label>
-            <input type="datetime-local" id="born_at" name="born_at" required value="{{ current_time }}">
-
-            <label for="convicted">Convicted?:</label>
-            <input type="checkbox" id="convicted" name="convicted">
+            <input type="datetime-local" id="born_at" name="born_at">
 
             <label for="face_image">Face Image:</label>
             <input type="file" id="face_image" name="face_image">
 
-            <button type="submit">Add Predator</button>
+            <label for="socials">Socials:</label>
+            <textarea type="text" id="socials" name="socials" placeholder="e.g., Twitter, Facebook"></textarea>
+
+            <label for="convicted">Convicted?:</label>
+            <input type="checkbox" id="convicted" name="convicted" class="checkbox">
+
+            <button type="submit">Add Predator</button> <!-- problem with submiting -->
         </form>
         <a href="/database">Back to Database</a>
     </div>
