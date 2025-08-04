@@ -4,5 +4,5 @@
 theres gonna be a start.bat
 
 # Login info
-- USER: hunter
+- USER: ralsei
 - PASS: admin123

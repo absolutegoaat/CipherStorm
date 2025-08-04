@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherStorm - Manage Users</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>CipherStorm</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p style="color:red;">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="navigation">
+            <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Home</button>
+            </form>
+            {% if current_user.is_admin %}
+                <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage Users</button>
+                </form>
+            {% endif %}
+            <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Manage Users</h1>
+        <p>Current User: {{ current_user.username }}</p>
+
+        <a href="{{ url_for('add_user') }}">
+            <button type="button">Add New User</button>
+        </a>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Admin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                        <td>
+                            <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display:inline;">
+                                <button type="submit" class="delete-button">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

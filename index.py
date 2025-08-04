@@ -15,7 +15,7 @@ app.secret_key = 'cipherthestorm'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'index'
 
 class DatabaseManager:
     def __init__(self, db_path: str = "database.db"):
@@ -41,7 +41,7 @@ class DatabaseManager:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             
-            # Create simple users table
+            # creates tables
             cursor.execute('''
                 CREATE TABLE users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +50,14 @@ class DatabaseManager:
                     is_admin BOOLEAN DEFAULT 0,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     last_login DATETIME
+                )
+
+                CREATE TABLE predators (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    description TEXT,
+                    face_image_url TEXT,
+                    born_at DATETIME,
                 )
             ''')
             
@@ -74,7 +82,7 @@ class DatabaseManager:
         cursor.execute('''
             INSERT INTO users (username, password_hash, is_admin)
             VALUES (?, ?, ?)
-        ''', ('hunter', admin_password_hash, 1))
+        ''', ('ralsei', admin_password_hash, 1))
         
         # Regular User Test
         user_password_hash = self._hash_password("user123")
@@ -261,6 +269,7 @@ def load_user(user_id):
         return User(user_data)
     return None
 
+# Login route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -287,16 +296,113 @@ def index():
         
     return flask.render_template('index.html')
 
+@app.route('/logout', methods=['POST', 'GET'])
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('index'))
+
+@app.route('/register')
+def register():
+    return flask.render_template('register.html')
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
     user = current_user
     if user.is_admin:
-        users = db.get_all_users()
-        return flask.render_template('home.html', users=users)
+        return flask.render_template('home.html')
+    elif user.is_authenticated:
+        return flask.render_template('home.html')
     else:
         flash('Access denied.')
-        return redirect(url_for('/'))
+        return redirect(url_for('index'))
+    
+@app.route('/manage_users', methods=['GET'])
+@login_required
+def manage_users():
+    user = current_user
+    if user.is_admin:
+        users = db.get_all_users()
+        return flask.render_template('admin/users.html', users=users)
+    else:
+        flash('Access denied.')
+        return redirect(url_for('index'))
+    
+@app.route('/add_user', methods=['GET', 'POST'])
+@login_required
+def add_user():
+    user = current_user
+    if not user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        is_admin = 'is_admin' in request.form
+        
+        if not username or not password:
+            flash('Username and password cannot be empty')
+            return redirect(url_for('manage_users'))
+
+        if db.add_user(username, password, is_admin):
+            flash(f'User {username} added successfully')
+        else:
+            flash(f'Failed to add user {username}')
+        
+        return redirect(url_for('manage_users'))
+
+    return flask.render_template('admin/add_user.html')
+
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = current_user
+    if not user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    
+    if db.delete_user(user_id):
+        flash(f'User with ID {user_id} deleted successfully')
+    else:
+        flash(f'Failed to delete user with ID {user_id}')
+    
+    return redirect(url_for('manage_users'))
+
+@app.route('/predators', methods=['GET'])
+@login_required
+def predators():
+    user = current_user
+    if user.is_admin:
+        predators = []
+        return flask.render_template('database/db.html', predators=predators)
+    
+@app.route('/predators/add', methods=['GET', 'POST'])
+@login_required
+def add_predator():
+    user = current_user
+    if not user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('predators'))
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        description = request.form.get('description', '').strip()
+        face_image_url = request.form.get('face_image_url', '').strip()
+        born_at = request.form.get('born_at', '').strip()
+        
+        if not name or not description or not face_image_url or not born_at:
+            flash('All fields are required')
+            return redirect(url_for('add_predator'))
+        
+        # Here you would typically save the predator to the database
+        # For now, we will just print it
+        print(f"Adding predator: {name}, {description}, {face_image_url}, {born_at}")
+        
+        flash(f'Predator {name} added successfully')
+        return redirect(url_for('predators'))
+    return flask.render_template('database/add_db.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
