@@ -7,6 +7,8 @@ import requests
 from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
 from colorama import init
+from werkzeug.utils import secure_filename
+
 
 
 app = flask.Flask(__name__)
@@ -54,15 +56,13 @@ class DatabaseManager:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS predators (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
+                    name TEXT,
                     address TEXT,
                     phone TEXT,
                     email TEXT,
                     description TEXT,
                     convicted BOOLEAN DEFAULT 0,
                     socials TEXT,
-                    face_image_url TEXT,
-                    born_at DATETIME
                 );''')
             
             conn.commit()
@@ -237,27 +237,15 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error adding user: {e}{Style.RESET_ALL}")
             return 
         
-    def add_predator(self, name, description, face_image_url, born_at):
-        """
-        Add a new predator to the database.
-
-        Args:
-            name (str): Name of the predator.
-            description (str): Description of the predator.
-            face_image_url (str): URL of the predator's face image.
-            born_at (str): Date and time when the predator was born.
-
-        Returns:
-            bool: True if the predator was added successfully, False otherwise.
-        """
+    def add_predator(self, name, description, address=None, phone=None, email=None, convicted=False, socials=None):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
             
             cursor.execute('''
-                INSERT INTO predators (name, description, face_image_url, born_at)
-                VALUES (?, ?, ?, ?)
-            ''', (name, description, face_image_url, born_at))
+                INSERT INTO predators (name, description, address, phone, email, convicted, socials)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (name, description, address, phone, email, int(convicted), socials))
             
             conn.commit()
             conn.close()
@@ -293,8 +281,6 @@ class DatabaseManager:
                     'description': row[5],
                     'convicted': bool(row[6]),
                     'socials': row[7],
-                    'face_image_url': row[8],
-                    'born_at': row[9]
                 })
             
             return predators
@@ -465,14 +451,9 @@ def delete_user(user_id):
 @app.route('/predators', methods=['GET'])
 @login_required
 def predators():
-    user = current_user
-    if user.is_admin:
-        predators = db.get_all_predators()
-        return flask.render_template('database/db.html', predators=predators)
-    else:
-        flash('Access denied.')
-        return redirect(url_for('dashboard'))
-    
+    predators = db.get_all_predators()
+    return flask.render_template('database/db.html', predators=predators)
+
 @app.route('/predators/add', methods=['GET', 'POST'])
 @login_required
 def add_predator():
@@ -483,33 +464,24 @@ def add_predator():
         email = request.form.get('email', '').strip()
         description = request.form.get('description', '').strip()
         socials = request.form.get('socials', '').strip()
-        face_image_url = request.form.get('face_image_url', '').strip()
-        born_at = request.form.get('born_at', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
+
+        if not name or not description:
+            flash('Name name Description are required.')
+            return redirect(url_for('add_predator'))
+
+        if db.add_predator(name, description, address, phone, email, convicted, socials):
+            flash(f'Predator {name} added successfully')
+            return redirect(url_for('predators'))
+        else:
+            flash(f'Failed to add predator {name}')
+            return redirect(url_for('add_predator'))
         
-        if request.method == 'POST':
-            if not name or not description or not face_image_url or not born_at:
-                flash('All fields are required')
-                return redirect(url_for('add_predator'))
-            
-            if db.add_predator(name, description, face_image_url, born_at, address, phone, email, convicted, socials):
-                flash(f'Predator {name} added successfully')
-            else:
-                flash(f'Failed to add predator {name}')
-        
-        flash(f'Predator {name} added successfully')
-        return redirect(url_for('predators'))
-    
     return flask.render_template('database/add_db.html')
 
 @app.route('/predators/delete/<int:predator_id>', methods=['POST'])
 @login_required
 def delete_predator(predator_id):
-    user = current_user
-    if not user.is_admin:
-        flash('Access denied.')
-        return redirect(url_for('predators'))
-    
     if request.method == 'POST':
         if db.delete_predator(predator_id):
             flash(f'Predator with ID {predator_id} deleted successfully')
@@ -520,6 +492,17 @@ def delete_predator(predator_id):
     
     flash(f'Predator with ID {predator_id} deleted successfully')
     return redirect(url_for('predators'))
+
+@app.route('/predators/view/<int:predator_id>', methods=['GET'])
+@login_required
+def view_predator(predator_id):
+    predators = db.get_all_predators()
+    predator = next((p for p in predators if p['id'] == predator_id), None)
+    if predator:
+        return flask.render_template('database/view_db.html', predator=predator)
+    else:
+        flash(f'Predator with ID {predator_id} not found')
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

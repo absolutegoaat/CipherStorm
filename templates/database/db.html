@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CipherStorm - Database</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
 </head>
 <body>
     <div class="header">
@@ -27,17 +28,27 @@
 
     <div class="main-content">
         <h1>Predator Database</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p style="color:red;">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <input type="text" id="search" placeholder="Search by name..." onkeyup="filterTable()">
         <form action="/predators/add" method="get">
             <button type="submit">Add Predator</button>
         </form>
+        <p>Total Predators: {{ predators|length }}</p>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Description</th>
-                    <th>Face Image</th>
-                    <th>Born At</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Convicted?</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -46,15 +57,22 @@
                 <tr>
                     <td>{{ predator.id }}</td>
                     <td>{{ predator.name }}</td>
-                    <td>{{ predator.description }}</td>
-                    <td><img src="{{ predator.face_image_url }}" alt="Face Image" width="100"></td>
-                    <td>{{ predator.born_at }}</td>
+                    <td>{{ predator.address }}</td>
+                    <td>{{ predator.phone }}</td>
+                    <td>{{ predator.email }}</td>
+                    <td>{{ 'Yes' if predator.convicted else 'No' }}</td>
                     <td>
-                        <button href="/edit/{{ predator.id }}">Edit</button>
+                        <form action="/predators/edit/{{ predator.id }}" method="get" style="display:inline;">
+                            <button type="submit">Edit</button>
+                        </form>
                         {% if current_user.is_admin %}
-                        <button href="/delete/{{ predator.id }}">Delete</button>
+                        <form action="/predators/delete/{{ predator.id }}" method="post" style="display:inline;">
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this predator?');">Delete</button>
+                        </form>
                         {% endif %}
-                        <button href="/view/{{ predator.id }}">View</button>
+                        <form action="/predators/view/{{ predator.id }}" method="get" style="display:inline;">
+                            <button type="submit">View</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

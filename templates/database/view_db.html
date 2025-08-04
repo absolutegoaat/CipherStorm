@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherStorm - Viewing {{ predator.name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="main-content">
+        <form action="/predators/view/{{ predator.id }}" method="get">
+            <h1>Viewing Predator: {{ predator.name }}</h1>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for msg in messages %}
+                        <p style="color:red;">{{ msg }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <p><strong>ID:</strong> {{ predator.id }}</p>
+            <p><strong>Name:</strong> {{ predator.name }}</p>
+            <p><Strong>Description:</Strong></p>
+            <textarea readonly>{{ predator.description }}</textarea>
+            <p><strong>Address:</strong> {{ predator.address }}</p>
+            <p><strong>Phone:</strong> {{ predator.phone }}</p>
+            <p><strong>Email:</strong> {{ predator.email }}</p>
+            <p><strong>Socials:</strong></p>
+            <textarea readonly>{{ predator.socials }}</textarea>
+            <p><strong>Convicted:</strong> {{ 'Yes' if predator.convicted else 'No' }}</p>
+        </form>
+        <form action="/predators" method="get">
+            <button type="submit">Go back to Database</button>
+        </form>
+    </div>
+</body>
+</html>
