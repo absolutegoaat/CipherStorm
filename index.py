@@ -542,7 +542,7 @@ def add_predator():
             return redirect(url_for('add_predator'))
 
         if db.add_predator(name, description, address, phone, email, convicted, socials):
-            flash(f'Predator {name} added successfully')
+            flash(f'{name} added successfully')
             return redirect(url_for('predators'))
         else:
             flash(f'Failed to add predator {name}')
@@ -555,11 +555,11 @@ def add_predator():
 def delete_predator(predator_id):
     if request.method == 'POST':
         if db.delete_predator(predator_id):
-            flash(f'Predator with ID {predator_id} deleted successfully')
+            flash(f'ID {predator_id} deleted successfully')
         else:
-            flash(f'Failed to delete predator with ID {predator_id}')
+            flash(f'Failed to delete ID {predator_id}')
 
-    print(f"Deleting predator with ID: {predator_id}")
+    print(f"Deleting ID: {predator_id}")
     
     flash(f'Predator with ID {predator_id} deleted successfully')
     return redirect(url_for('predators'))
@@ -572,7 +572,7 @@ def view_predator(predator_id):
     if predator:
         return flask.render_template('database/view_db.html', predator=predator)
     else:
-        flash(f'Predator with ID {predator_id} not found')
+        flash(f'ID {predator_id} not found')
 
 @app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
 @login_required
@@ -596,29 +596,13 @@ def edit_predator(predator_id):
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
         if db.update_predator(predator_id, name, description, address, phone, email, convicted, socials):
-            flash(f'Predator {name} updated successfully')
+            flash(f'{name} updated successfully')
             return redirect(url_for('predators'))
         else:
-            flash(f'Failed to update predator {name}')
+            flash(f'Failed to update {name}')
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
     return flask.render_template('database/edit_db.html', predator=predator)
     
-
-def get():
-    endpoint = 'https://ipinfo.io/json'
-    response = requests.get(endpoint, verify = True)
-
-    if response.status_code != 200:
-        return 'Status:', response.status_code, 'Problem with the request. Exiting.'
-        exit()
-
-    data = response.json()
-
-    return data['ip']
-
-my_ip = get()
-print(my_ip)
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
