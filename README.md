@@ -5,5 +5,5 @@ Pedator Database Manager
 theres gonna be a start.bat
 
 # Login info
-- USER: ralsei
+- USER: admin
 - PASS: admin123

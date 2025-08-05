@@ -86,7 +86,7 @@ class DatabaseManager:
         cursor.execute('''
             INSERT INTO users (username, password_hash, is_admin)
             VALUES (?, ?, ?)
-        ''', ('ralsei', admin_password_hash, 1))
+        ''', ('admin', admin_password_hash, 1))
         
         # Regular User Test
         user_password_hash = self._hash_password("user123")
