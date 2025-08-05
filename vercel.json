@@ -4,7 +4,7 @@
   "builds": [
       {
           "src": "index.py",
-          "use": "@v1s0ors-projects/flask"
+          "use": "@vercel/python"
       }
   ],
   "routes": [
