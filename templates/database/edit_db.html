@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherStorm - Editing {{ predator.name }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>CipherStorm</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p style="color:red;">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="main-content">
+        <h1>Editing {{ predator.name }}</h1>
+        <form method="post" action="/predators/edit/{{ predator.id }}">
+            <input type="text" id="name" name="name" placeholder="Name/Username" value="{{ predator.name }}" required>
+            <input type="text" id="address" name="address" placeholder="Address" value="{{ predator.address }}">
+            <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ predator.phone }}">
+            <input type="email" id="email" name="email" placeholder="Email" value="{{ predator.email }}">
+            <textarea id="description" name="description" placeholder="Description">{{ predator.description }}</textarea>
+            <textarea id="socials" name="socials" placeholder="Socials (e.g., Twitter, Facebook)">{{ predator.socials }}</textarea>
+            <label for="convicted">Convicted?:</label>
+            <input type="checkbox" id="convicted" name="convicted" class="checkbox" {% if predator.convicted %}checked{% endif %}>
+            <button type="submit">Update Predator</button>
+        </form>
+    </div>
+</body>
+</html>

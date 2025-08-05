@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="main-content">
-        <h1>Add Predator</h1>
+    <div class="header">
+        <h1>CipherStorm</h1>
+        
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
@@ -16,6 +17,10 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+    </div>
+
+    <div class="main-content">
+        <h1>Add Predator</h1>
         <form action="/predators/add" method="post" enctype="multipart/form-data">
             <label for="name">Name/Username:</label>
             <input type="text" id="name" name="name" required>

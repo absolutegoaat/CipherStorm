@@ -330,6 +330,47 @@ class DatabaseManager:
         except sqlite3.Error as e:
             print(f"{Fore.RED}[-] Error deleting user: {e}{Style.RESET_ALL}")
             return False
+        
+    def edit_user(self, user_id, username=None, password=None, is_admin=None):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            if username:
+                cursor.execute('UPDATE users SET username = ? WHERE id = ?', (username, user_id))
+            if password:
+                password_hash = self._hash_password(password)
+                cursor.execute('UPDATE users SET password_hash = ? WHERE id = ?', (password_hash, user_id))
+            if is_admin is not None:
+                cursor.execute('UPDATE users SET is_admin = ? WHERE id = ?', (int(is_admin), user_id))
+            
+            conn.commit()
+            conn.close()
+            return True
+        except sqlite3.Error as e:
+            print(f"{Fore.RED}[-] Error editing user: {e}{Style.RESET_ALL}")
+            return False
+        
+    def update_predator(self, predator_id, name, description, address=None, phone=None, email=None, convicted=False, socials=None):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                UPDATE predators
+                SET name = ?, description = ?, address = ?, phone = ?, email = ?, convicted = ?, socials = ?
+                WHERE id = ?
+            ''', (name, description, address, phone, email, int(convicted), socials, predator_id))
+
+            conn.commit()
+            conn.close()
+            return True
+
+        except sqlite3.Error as e:
+            print(f"{Fore.RED}[-] Error updating predator: {e}{Style.RESET_ALL}")
+            return False
+
+        
 # Initialize database
 db = DatabaseManager()
 
@@ -372,6 +413,10 @@ def index():
             return redirect(url_for('index'))
         
     return flask.render_template('index.html')
+
+@app.route('/ralsei')
+def ralsei():
+    return flask.render_template('fun/ralsei.html')
 
 @app.route('/logout', methods=['POST', 'GET'])
 @login_required
@@ -448,6 +493,32 @@ def delete_user(user_id):
     
     return redirect(url_for('manage_users'))
 
+@app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def edit_user(user_id):
+    user_edit = db.get_user_by_id(user_id)  # <-- you need this function in your db module
+    user = current_user
+    if not user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        is_admin = 'is_admin' in request.form
+        
+        if not username or not password:
+            flash('Username and password cannot be empty')
+            return redirect(url_for('edit_user', user_id=user_id))
+
+        if db.edit_user(user_id, username, password, is_admin):
+            flash(f'User {username} updated successfully')
+        else:
+            flash(f'Failed to update user {username}')
+        
+        return redirect(url_for('manage_users'))
+
+    return flask.render_template('admin/edit_user.html', user_edit=user_edit)
+
 @app.route('/predators', methods=['GET'])
 @login_required
 def predators():
@@ -502,6 +573,36 @@ def view_predator(predator_id):
         return flask.render_template('database/view_db.html', predator=predator)
     else:
         flash(f'Predator with ID {predator_id} not found')
+
+@app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
+@login_required
+def edit_predator(predator_id):
+    predator = next((p for p in db.get_all_predators() if p['id'] == predator_id), None)
+    if not predator:
+        flash(f'Predator with ID {predator_id} not found')
+        return redirect(url_for('predators'))
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        address = request.form.get('address', '').strip()
+        phone = request.form.get('phone', '').strip()
+        email = request.form.get('email', '').strip()
+        description = request.form.get('description', '').strip()
+        convicted = request.form.get('convicted', 'off') == 'on'
+        socials = request.form.get('socials', '').strip()
+
+        if not name or not description:
+            flash('Name and Description are required.')
+            return redirect(url_for('edit_predator', predator_id=predator_id))
+
+        if db.update_predator(predator_id, name, description, address, phone, email, convicted, socials):
+            flash(f'Predator {name} updated successfully')
+            return redirect(url_for('predators'))
+        else:
+            flash(f'Failed to update predator {name}')
+            return redirect(url_for('edit_predator', predator_id=predator_id))
+
+    return flask.render_template('database/edit_db.html', predator=predator)
     
 
 if __name__ == '__main__':

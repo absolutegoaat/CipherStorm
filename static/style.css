@@ -58,9 +58,14 @@ textarea:focus {
 .navigation {
     width: auto;
     padding: 5px;
-    background: linear-gradient(to bottom, #23272b 0%, #2d343c 100%);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.18), 0 1px 0 #444 inset;
-    border: 1px solid #444a52;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.6s ease-in-out;
+}
+.navigation:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    transition: all 0.6s ease-in-out;
 }
 
 .navigation-tabs {
@@ -103,6 +108,12 @@ th, td:hover {
 th {
     background-color: #000000;
     color: #ffffff;
+}
+
+.status-message {
+    color: red;
+    font-weight: bold;
+    margin: 10px 0;
 }
 
 input {
