@@ -605,5 +605,20 @@ def edit_predator(predator_id):
     return flask.render_template('database/edit_db.html', predator=predator)
     
 
+def get():
+    endpoint = 'https://ipinfo.io/json'
+    response = requests.get(endpoint, verify = True)
+
+    if response.status_code != 200:
+        return 'Status:', response.status_code, 'Problem with the request. Exiting.'
+        exit()
+
+    data = response.json()
+
+    return data['ip']
+
+my_ip = get()
+print(my_ip)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
