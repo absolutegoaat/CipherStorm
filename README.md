@@ -3,7 +3,35 @@ Pedator Database Manager
 i made this in 2 days LMFAO
 
 # Setup
-theres gonna be a start.bat
+## Windows
+- Download this project
+- Install [XAMPP](https://www.apachefriends.org/)
+- Launch the XAMPP Control Panel
+- Start MySQL
+- Now launch the start.bat file
+-----
+Congrats you have cipherstorm running!
+
+## Linux
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+```
+Now run the start.sh file by
+```bash
+chmod +x start.sh
+./start.sh
+```
+if your done with using cipherstorm you can stop the mysql instance by
+```bash
+sudo systemctl stop mysql
+```
+removing it to auto-start on boot
+```bash
+sudo systemctl disable mysql
+```
 
 # Login info
 - USER: admin
