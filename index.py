@@ -288,5 +288,8 @@ def edit_predator(predator_id):
 
     return flask.render_template('database/edit_db.html', predator=predator)
 
+if len(sys.argv) is 1:
+    sys.argv.append(8080)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=sys.argv[1], debug=True)
