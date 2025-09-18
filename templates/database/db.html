@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>CipherStorm</h1>
+        <h1 class="header-h1">CipherStorm</h1>
 
         <div class="navigation">
             <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
@@ -17,7 +17,7 @@
             </form>
             {% if current_user.is_admin %}
                 <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
-                    <button type="submit" class="navigation-tabs">Manage Users</button>
+                    <button type="submit" class="navigation-tabs">Manage Web Users</button>
                 </form>
             {% endif %}
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
@@ -28,7 +28,6 @@
 
     <div class="main-content">
         <h1>Database</h1>
-        <p>This database by the way isnt just for pedophiles, it is for racists, zoophiles, and etc</p>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for msg in messages %}
