@@ -19,19 +19,22 @@
         {% endwith %}
     </div>
 
-    <div class="main-content">
-        <form action="/predators/view/{{ predator.id }}" method="get">
-            <h1>Viewing Predator: {{ predator.name }}</h1>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for msg in messages %}
-                        <p style="color:red;">{{ msg }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+    <div class="container">
+        <div class="other-content">
+            <h2>Images</h2>
+            {% if predator.images %}
+                {% for img in predator.images %}
+                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="max-width: 100%; height: auto; margin-bottom: 10px;" multiple>
+                {% endfor %}
+            {% else %}
+                <p>No images available.</p>
+            {% endif %}
+        </div>
+        <div class="main-content">
+            <h2>Viewing Predator: {{ predator.name }}</h2>
             <p><strong>ID:</strong> {{ predator.id }}</p>
             <p><strong>Name:</strong> {{ predator.name }}</p>
-            <p><Strong>Description:</Strong></p>
+            <p><strong>Description:</strong></p>
             <textarea readonly>{{ predator.description }}</textarea>
             <p><strong>Address:</strong> {{ predator.address }}</p>
             <p><strong>Phone:</strong> {{ predator.phone }}</p>
@@ -39,10 +42,10 @@
             <p><strong>Socials:</strong></p>
             <textarea readonly>{{ predator.socials }}</textarea>
             <p><strong>Convicted:</strong> {{ 'Yes' if predator.convicted else 'No' }}</p>
-        </form>
-        <form action="/predators" method="get">
-            <button type="submit">Go back to Database</button>
-        </form>
+            <form action="/predators" method="get">
+                <button type="submit">Go back to Database</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

@@ -69,6 +69,15 @@ class DatabaseManager:
                     socials TEXT
                 )
             ''')
+            # Predator images table 
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS predator_images (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    predator_id INT NOT NULL,
+                    image_path VARCHAR(255) NOT NULL,
+                    FOREIGN KEY (predator_id) REFERENCES predators(id) ON DELETE CASCADE
+                )
+            ''')
 
             conn.commit()
             print(f"{Fore.GREEN}[+] Tables created successfully.{Style.RESET_ALL}")
@@ -227,14 +236,27 @@ class DatabaseManager:
     # -----------------------------
     # Predator methods
     # -----------------------------
-    def add_predator(self, name, description, address=None, phone=None, email=None, convicted=False, socials=None):
+    
+    def add_predator(self, name, description, address=None, phone=None, email=None, convicted=False, socials=None, image_paths=None):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
+
+            # Insert predator
             cursor.execute('''
                 INSERT INTO predators (name, description, address, phone, email, convicted, socials)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             ''', (name, description, address, phone, email, int(convicted), socials))
+            predator_id = cursor.lastrowid  # get the new predator's ID
+
+            # Insert images if provided
+            if image_paths:
+                for path in image_paths:
+                    cursor.execute('''
+                        INSERT INTO predator_images (predator_id, image_path)
+                        VALUES (%s, %s)
+                    ''', (predator_id, path))
+
             conn.commit()
             conn.close()
             return True
@@ -266,6 +288,39 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error getting all predators: {e}{Style.RESET_ALL}")
             return []
 
+    def get_predator(self, predator_id):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            # Get predator info
+            cursor.execute('SELECT * FROM predators WHERE id=%s', (predator_id,))
+            row = cursor.fetchone()
+            if not row:
+                return None
+
+            predator = {
+                'id': row[0],
+                'name': row[1],
+                'address': row[2],
+                'phone': row[3],
+                'email': row[4],
+                'description': row[5],
+                'convicted': bool(row[6]),
+                'socials': row[7]
+            }
+
+            # Get images
+            cursor.execute('SELECT image_path FROM predator_images WHERE predator_id=%s', (predator_id,))
+            images = [r[0] for r in cursor.fetchall()]
+            predator['images'] = images
+
+            conn.close()
+            return predator
+        except Error as e:
+            print(f"{Fore.RED}[-] Error fetching predator: {e}{Style.RESET_ALL}")
+            return None
+
     def update_predator(self, predator_id, name, description, address=None, phone=None, email=None, convicted=False, socials=None):
         try:
             conn = self.get_connection()
@@ -282,7 +337,30 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error updating predator: {e}{Style.RESET_ALL}")
             return False
 
+    def update_predator_images(self, predator_id, new_image_paths):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            # Delete old images
+            cursor.execute('DELETE FROM predator_images WHERE predator_id=%s', (predator_id,))
+
+            # Insert new images
+            for path in new_image_paths:
+                cursor.execute('INSERT INTO predator_images (predator_id, image_path) VALUES (%s, %s)',
+                               (predator_id, path))
+
+            conn.commit()
+            conn.close()
+            return True
+        except Error as e:
+            print(f"{Fore.RED}[-] Error updating predator images: {e}{Style.RESET_ALL}")
+            return False
+
     def delete_predator(self, predator_id):
+        """
+        Delete a predator. Images are deleted automatically in the DB due to ON DELETE CASCADE.
+        """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
