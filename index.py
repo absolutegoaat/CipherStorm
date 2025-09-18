@@ -252,7 +252,8 @@ def delete_predator(predator_id):
 @login_required
 def view_predator(predator_id):
     predators = db.get_all_predators()
-    predator = next((p for p in predators if p['id'] == predator_id), None)
+    # predator = next((p for p in predators if p['id'] == predator_id), None)
+    predator = db.get_predator(predator_id=predator_id)
     if predator:
         return flask.render_template('database/view_db.html', predator=predator)
     else:
@@ -288,7 +289,7 @@ def edit_predator(predator_id):
 
     return flask.render_template('database/edit_db.html', predator=predator)
 
-if len(sys.argv) is 1:
+if len(sys.argv) == 1:
     sys.argv.append(8080)
 
 if __name__ == '__main__':
