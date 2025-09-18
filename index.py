@@ -6,6 +6,7 @@ from colorama import Fore, Style
 from colorama import init
 from werkzeug.utils import secure_filename
 import os
+import sys
 
 app = flask.Flask(__name__)
 
@@ -286,6 +287,6 @@ def edit_predator(predator_id):
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
     return flask.render_template('database/edit_db.html', predator=predator)
-    
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=sys.argv[1], debug=True)
