@@ -309,7 +309,7 @@ def edit_predator(predator_id):
             for filename in saved_filenames:
                 src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 dst = os.path.join(predator_folder, filename)
-                # os.rename(src, dst)
+                os.rename(src, dst)
                 final_paths.append(f'images/predator_{predator_id}/{filename}')
                 
             predator = db.get_predator(predator_id=predator_id)
