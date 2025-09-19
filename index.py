@@ -270,7 +270,7 @@ def view_predator(predator_id):
 @app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
 @login_required
 def edit_predator(predator_id):
-    predator = db.get_predator(predator_id=predator)
+    predator = db.get_predator(predator_id=predator_id)
     if not predator:
         flash(f'Predator with ID {predator_id} not found')
         return redirect(url_for('predators'))
@@ -289,6 +289,37 @@ def edit_predator(predator_id):
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
         if db.update_predator(predator_id, name, description, address, phone, email, convicted, socials):
+            images = request.files.getlist('images')
+            saved_filenames = []
+
+            # Save images temporarily
+            for file in images:
+                # if file:
+                    filename = secure_filename(file.filename)
+                    temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(temp_path)
+                    saved_filenames.append(file.filename)
+                    
+            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
+            os.makedirs(predator_folder, exist_ok=True)
+
+            final_paths = []
+            for filename in saved_filenames:
+                src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                dst = os.path.join(predator_folder, filename)
+                os.rename(src, dst)
+                final_paths.append(f'images/predator_{predator_id}/{filename}')
+                
+            predator = db.get_predator(predator_id=predator_id)
+            previous_paths = predator['images']
+            
+            for path in previous_paths:
+              final_paths.append(path)
+              
+            # Update images in DB
+            
+            db.update_predator_images(predator_id, final_paths)
+
             flash(f'{name} updated successfully')
             return redirect(url_for('predators'))
         else:

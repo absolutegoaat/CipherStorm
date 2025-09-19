@@ -19,7 +19,7 @@
         {% endwith %}
     </div>
 
-    <form method="post" action="/predators/edit/{{ predator.id }}">
+    <form method="post" action="/predators/edit/{{ predator.id }}" enctype="multipart/form-data">
     <div class="container">
         <div class="other-content" style="margin-right: 10px;">
             <h2>Images</h2>
@@ -30,7 +30,7 @@
             {% else %}
                 <p>No images available.</p>
             {% endif %}
-            <input type="file" id="images" name="images" accept="image/*" multiple>
+            <input type="file" class="file-input" accept="image/*" name="images" multiple>
         </div>
 
         <div class="main-content">
