@@ -24,14 +24,14 @@
             <h2>Images</h2>
             {% if predator.images %}
                 {% for img in predator.images %}
-                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="max-width: 100%; height: auto; margin-bottom: 10px;" multiple>
+                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="width: auto; height: 350px; margin-bottom: 10px;">
                 {% endfor %}
             {% else %}
                 <p>No images available.</p>
             {% endif %}
         </div>
         <div class="main-content">
-            <h2>Viewing Predator: {{ predator.name }}</h2>
+            <h2>Viewing {{ predator.name }}</h2>
             <p><strong>ID:</strong> {{ predator.id }}</p>
             <p><strong>Name:</strong> {{ predator.name }}</p>
             <p><strong>Description:</strong></p>
@@ -40,7 +40,7 @@
             <p><strong>Phone:</strong> {{ predator.phone }}</p>
             <p><strong>Email:</strong> {{ predator.email }}</p>
             <p><strong>Socials:</strong></p>
-            <textarea readonly>{{ predator.socials }}</textarea>
+            <textarea style="width: 1115px;" readonly>{{ predator.socials }}</textarea>
             <p><strong>Convicted:</strong> {{ 'Yes' if predator.convicted else 'No' }}</p>
             <form action="/predators" method="get">
                 <button type="submit">Go back to Database</button>
