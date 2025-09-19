@@ -24,8 +24,9 @@
         <div class="other-content" style="margin-right: 10px;">
             <h2>Images</h2>
             {% if predator.images %}
+            <p style="color: grey;"><strong>Disclaimer: If your gonna add images please make sure they dont have a space in the filename</strong></p>
                 {% for img in predator.images %}
-                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
+                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="width: auto; height: 350px; margin-bottom: 10px;">
                 {% endfor %}
             {% else %}
                 <p>No images available.</p>
