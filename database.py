@@ -243,10 +243,10 @@ class DatabaseManager:
             cursor = conn.cursor()
 
             # Insert predator
-            cursor.execute('''
+            cursor.execute(f'''
                 INSERT INTO predators (name, description, address, phone, email, convicted, socials)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            ''', (name, description, address, phone, email, int(convicted), socials))
+                VALUES (%s, '{description}', %s, %s, %s, %s, %s)
+            ''', (name, address, phone, email, int(convicted), socials))
             predator_id = cursor.lastrowid  # get the new predator's ID
 
             # Insert images if provided
