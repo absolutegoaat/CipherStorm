@@ -294,11 +294,13 @@ def edit_predator(predator_id):
 
             # Save images temporarily
             for file in images:
-                # if file:
+                if file.filename != "":
                     filename = secure_filename(file.filename)
                     temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                    file.save(temp_path)
-                    saved_filenames.append(file.filename)
+                    if temp_path != "static/images/":
+                        file.save(temp_path)
+                        # print()
+                        saved_filenames.append(file.filename)
                     
             predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
             os.makedirs(predator_folder, exist_ok=True)
@@ -307,7 +309,7 @@ def edit_predator(predator_id):
             for filename in saved_filenames:
                 src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 dst = os.path.join(predator_folder, filename)
-                os.rename(src, dst)
+                # os.rename(src, dst)
                 final_paths.append(f'images/predator_{predator_id}/{filename}')
                 
             predator = db.get_predator(predator_id=predator_id)
