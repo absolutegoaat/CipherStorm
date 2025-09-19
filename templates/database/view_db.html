@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CipherStorm - Viewing {{ predator.name }}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <div class="header">
         <h1>CipherStorm</h1>
-        
+
         {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p style="color:red;">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for msg in messages %}
+        <p style="color:red;">{{ msg }}</p>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -23,11 +25,12 @@
         <div class="other-content">
             <h2>Images</h2>
             {% if predator.images %}
-                {% for img in predator.images %}
-                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="width: auto; height: 350px; margin-bottom: 10px;">
-                {% endfor %}
+            {% for img in predator.images %}
+            <img src="{{ url_for('static', filename=img) }}" alt="Predator Image"
+                style="width: auto; height: 350px; margin-bottom: 10px;">
+            {% endfor %}
             {% else %}
-                <p>No images available.</p>
+            <p>No images available.</p>
             {% endif %}
         </div>
         <div class="main-content">
@@ -38,7 +41,7 @@
             <textarea readonly>{{ predator.description }}</textarea>
             <p><strong>Address:</strong> {{ predator.address }}</p>
             {% if predator.address %}
-                <iframe width="420" height="240" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="{{ 'https://maps.google.com/maps?width=520&height=400&hl=en&q=' + url_parse(predator.address) + '&t=&z=12&ie=UTF8&iwloc=B&maptype=satellite&output=embed' }}"></iframe> <a href='https://www.acadoo.de/leistungen/ghostwriter-doktorarbeit/'>Dissertation schreiben Unterstützung</a> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=7e9825197ba1121d8f6a51837a7f3281613699ea'></script>
+            <iframe width="520" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="{{ 'https://maps.google.com/maps?width=520&height=400&hl=en&q=' + url_parse(predator.address) + '&t=&z=12&ie=UTF8&iwloc=B&output=embed' }}"></iframe> <a href='https://www.acadoo.de/leistungen/ghostwriter-doktorarbeit/'>Dissertation schreiben Unterstützung</a> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=7e9825197ba1121d8f6a51837a7f3281613699ea'></script>
             {% endif %}
             <p><strong>Phone:</strong> {{ predator.phone }}</p>
             <p><strong>Email:</strong> {{ predator.email }}</p>
@@ -51,4 +54,5 @@
         </div>
     </div>
 </body>
+
 </html>
