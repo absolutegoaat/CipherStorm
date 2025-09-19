@@ -5,6 +5,7 @@ from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
 from colorama import init
 from werkzeug.utils import secure_filename
+import urllib.parse
 import os
 import sys
 
@@ -38,6 +39,13 @@ def load_user(user_id):
     if user_data:
         return User(user_data)
     return None
+
+# manifest.json to make it a web app
+@app.route('/manifest.json', methods=['GET'])
+def manifest():
+    return {
+
+    }
 
 # Login route
 @app.route('/', methods=['GET', 'POST'])
@@ -255,14 +263,14 @@ def view_predator(predator_id):
     # predator = next((p for p in predators if p['id'] == predator_id), None)
     predator = db.get_predator(predator_id=predator_id)
     if predator:
-        return flask.render_template('database/view_db.html', predator=predator)
+        return flask.render_template('database/view_db.html', predator=predator, url_parse=urllib.parse.quote)
     else:
         flash(f'ID {predator_id} not found')
 
 @app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
 @login_required
 def edit_predator(predator_id):
-    predator = next((p for p in db.get_all_predators() if p['id'] == predator_id), None)
+    predator = db.get_predator(predator_id=predator)
     if not predator:
         flash(f'Predator with ID {predator_id} not found')
         return redirect(url_for('predators'))
