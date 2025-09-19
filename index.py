@@ -4,6 +4,10 @@ from database import DatabaseManager
 from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
 from colorama import init
+from werkzeug.utils import secure_filename
+import urllib.parse
+import os
+import sys
 
 app = flask.Flask(__name__)
 
@@ -14,6 +18,14 @@ login_manager.init_app(app)
 login_manager.login_view = 'index'
 
 db = DatabaseManager()
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = 'static/images'
+UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 class User(UserMixin):
     def __init__(self, user_data):
@@ -27,6 +39,13 @@ def load_user(user_id):
     if user_data:
         return User(user_data)
     return None
+
+# manifest.json to make it a web app
+@app.route('/manifest.json', methods=['GET'])
+def manifest():
+    return {
+
+    }
 
 # Login route
 @app.route('/', methods=['GET', 'POST'])
@@ -178,14 +197,50 @@ def add_predator():
         socials = request.form.get('socials', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
 
+        # -----------------------
+        # Handle uploaded images
+        # -----------------------
+        images = request.files.getlist('images')
+        saved_filenames = []
+
+        # Save images temporarily
+        for file in images:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(temp_path)
+                saved_filenames.append(filename)  # we'll move them after DB insert
+
+        # -----------------------
+        # Add predator to DB
+        # -----------------------
         if db.add_predator(name, description, address, phone, email, convicted, socials):
+            # Get the last added predator to retrieve its ID
+            predator = db.get_all_predators()[-1]
+            predator_id = predator['id']
+
+            # Create folder for this predator
+            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
+            os.makedirs(predator_folder, exist_ok=True)
+
+            final_paths = []
+            for filename in saved_filenames:
+                src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                dst = os.path.join(predator_folder, filename)
+                os.rename(src, dst)
+                final_paths.append(f'images/predator_{predator_id}/{filename}')
+
+            # Update images in DB
+            db.update_predator_images(predator_id, final_paths)
+
             flash(f'{name} added successfully')
             return redirect(url_for('predators'))
         else:
             flash(f'Failed to add predator {name}')
             return redirect(url_for('add_predator'))
-        
+
     return flask.render_template('database/add_db.html')
+
 
 @app.route('/predators/delete/<int:predator_id>', methods=['POST'])
 @login_required
@@ -205,16 +260,17 @@ def delete_predator(predator_id):
 @login_required
 def view_predator(predator_id):
     predators = db.get_all_predators()
-    predator = next((p for p in predators if p['id'] == predator_id), None)
+    # predator = next((p for p in predators if p['id'] == predator_id), None)
+    predator = db.get_predator(predator_id=predator_id)
     if predator:
-        return flask.render_template('database/view_db.html', predator=predator)
+        return flask.render_template('database/view_db.html', predator=predator, url_parse=urllib.parse.quote)
     else:
         flash(f'ID {predator_id} not found')
 
 @app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
 @login_required
 def edit_predator(predator_id):
-    predator = next((p for p in db.get_all_predators() if p['id'] == predator_id), None)
+    predator = db.get_predator(predator_id=predator_id)
     if not predator:
         flash(f'Predator with ID {predator_id} not found')
         return redirect(url_for('predators'))
@@ -233,6 +289,37 @@ def edit_predator(predator_id):
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
         if db.update_predator(predator_id, name, description, address, phone, email, convicted, socials):
+            images = request.files.getlist('images')
+            saved_filenames = []
+
+            # Save images temporarily
+            for file in images:
+                # if file:
+                    filename = secure_filename(file.filename)
+                    temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(temp_path)
+                    saved_filenames.append(file.filename)
+                    
+            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
+            os.makedirs(predator_folder, exist_ok=True)
+
+            final_paths = []
+            for filename in saved_filenames:
+                src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                dst = os.path.join(predator_folder, filename)
+                os.rename(src, dst)
+                final_paths.append(f'images/predator_{predator_id}/{filename}')
+                
+            predator = db.get_predator(predator_id=predator_id)
+            previous_paths = predator['images']
+            
+            for path in previous_paths:
+              final_paths.append(path)
+              
+            # Update images in DB
+            
+            db.update_predator_images(predator_id, final_paths)
+
             flash(f'{name} updated successfully')
             return redirect(url_for('predators'))
         else:
@@ -240,6 +327,9 @@ def edit_predator(predator_id):
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
     return flask.render_template('database/edit_db.html', predator=predator)
-    
+
+if len(sys.argv) == 1:
+    sys.argv.append(8080)
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=sys.argv[1], debug=True)

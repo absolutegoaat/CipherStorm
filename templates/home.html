@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>CipherStorm</h1>
+        <h1 class="header-h1">CipherStorm</h1>
 
         <div class="navigation">
             <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
@@ -16,7 +16,7 @@
             </form>
             {% if current_user.is_admin %}
                 <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
-                    <button type="submit" class="navigation-tabs">Manage Users</button>
+                    <button type="submit" class="navigation-tabs">Manage Web Users</button>
                 </form>
             {% endif %}
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
@@ -27,8 +27,13 @@
 
     <div class="main-content">
         <h1>Welcome to CipherStorm</h1>
-        <p>Current User: {{ current_user.username }}</p>
-        <button type="button" onclick="window.location.href='{{ url_for('predators') }}'">View Database</button>
+        <p><strong>User:</strong> {{ current_user.username }}</p>       
+        <h2>Quick Actions</h2>
+        <button type="button" style="height: 100px;" onclick="window.location.href='/predators'">View Database</button>
+        <button type="button" style="height: 100px;" onclick="window.location.href='/predators/add'">Add Predator</button>
+        {% if current_user.is_admin %}
+            <button type="button" style="height: 100px;" onclick="window.location.href='/manage_users'">Manage Web Users</button>
+        {% endif %}
     </div>
 </body>
 </html>

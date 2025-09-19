@@ -2,3 +2,5 @@ flask
 flask-login
 requests
 colorama
+mysql
+mysql-connector-python

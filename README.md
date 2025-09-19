@@ -4,7 +4,9 @@ i made this in 2 days LMFAO
 
 # Setup
 ## Windows
-- Download this project
+XAMPP is used solely for the purpose of starting MySQL. If you perfer to use another method for starting MySQL, go ahead but do not submit any issues or PRs if any part of the setup does not work.
+
+- Download the source code ZIP from the releases or ``git clone`` this repo
 - Install [XAMPP](https://www.apachefriends.org/)
 - Launch the XAMPP Control Panel
 - Start MySQL

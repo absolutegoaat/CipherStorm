@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CiqherStorm - Add predator</title>
+    <title>CipherStorm - Add predator</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -19,33 +19,42 @@
         {% endwith %}
     </div>
 
-    <div class="main-content">
-        <h1>Add Predator</h1>
-        <form action="/predators/add" method="post" enctype="multipart/form-data">
-            <label for="name">Name/Username:</label>
-            <input type="text" id="name" name="name" required>
+    <form action="/predators/add" method="post" enctype="multipart/form-data">
+    <div class="container">
+            <div class="main-content">
+                <h1>Picture(s)</h1>
+                <input type="file" class="file-input" accept="image/*" name="images" multiple>
+                <br>
+            </div>
+            <div class="other-content">
+                    <h1>Add Predator</h1>
 
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address">
+                    <label for="name">Name/Username:</label>
+                    <input type="text" id="name" name="name" required>
 
-            <label for="phone">Phone:</label>
-            <input type="text" id="phone" name="phone">
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address">
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email">
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone">
 
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                    <br>
 
-            <label for="socials">Socials:</label>
-            <textarea type="text" id="socials" name="socials" placeholder="e.g., Twitter, Facebook"></textarea>
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description"></textarea>
 
-            <label for="convicted">Convicted?:</label>
-            <input type="checkbox" id="convicted" name="convicted" class="checkbox">
+                    <label for="socials">Socials:</label>
+                    <textarea id="socials" name="socials" placeholder="e.g., Twitter, Facebook"></textarea>
 
-            <button type="submit">Add Predator</button>
-        </form>
-        <a href="/predators">Back to Database</a>
-    </div>
+                    <label for="convicted">Convicted?:</label>
+                    <input type="checkbox" id="convicted" name="convicted" class="checkbox">
+                    </br>
+                    <button type="submit">Add Predator</button>
+                    <button type="button" onclick="window.location.href='/predators'">Cancel</button>
+            </div>
+        </div>
+    </form>
 </body>
 </html>
