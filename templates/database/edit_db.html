@@ -23,14 +23,7 @@
     <div class="container">
         <div class="other-content" style="margin-right: 10px;">
             <h2>Images</h2>
-            {% if predator.images %}
-            <p style="color: grey;"><strong>Disclaimer: If your gonna add images please make sure they dont have a space in the filename</strong></p>
-                {% for img in predator.images %}
-                    <img src="{{ url_for('static', filename=img) }}" alt="Predator Image" style="width: auto; height: 350px; margin-bottom: 10px;">
-                {% endfor %}
-            {% else %}
-                <p>No images available.</p>
-            {% endif %}
+            <p style="color: grey;"><strong>Disclaimer: If your gonna add images please make sure they dont have a space in the filename</strong>, images you've submitted will be shown in the viewer it is not shown here for styling reasons (will be temporary), you can also select multiple images</p>
             <input type="file" class="file-input" accept="image/*" name="images" multiple>
         </div>
 
@@ -44,7 +37,8 @@
             <textarea id="socials" name="socials" placeholder="Socials (e.g., Twitter, Facebook)">{{ predator.socials }}</textarea>
             <label for="convicted">Convicted?:</label>
             <input type="checkbox" id="convicted" name="convicted" class="checkbox" {% if predator.convicted %}checked{% endif %}>
-            <button type="submit">Update Predator</button>
+            </br>
+            <button type="submit">Update {{ predator.name}}</button>
         </div>
     </form>
 </body>

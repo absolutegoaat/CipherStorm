@@ -6,6 +6,7 @@
     <title>CipherStorm - Database</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+<script src="{{ url_for('static', filename='scripts/javascript/search.js') }}"></script>
 <body>
     <div class="header">
         <h1 class="header-h1">CipherStorm</h1>
@@ -17,6 +18,9 @@
             {% if current_user.is_admin %}
                 <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
                     <button type="submit" class="navigation-tabs">Manage Web Users</button>
+                </form>
+                <form action="{{ url_for('sqlusers') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage SQL Users</button>
                 </form>
             {% endif %}
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">

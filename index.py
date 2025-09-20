@@ -330,6 +330,18 @@ def edit_predator(predator_id):
 
     return flask.render_template('database/edit_db.html', predator=predator)
 
+# TODO: add image deletion (on this exact line)
+
+@app.route('/sqlusers', methods=['GET'])
+@login_required
+def sqlusers():
+    if not current_user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    else:
+        sqlusers = db.get_mysql_users()
+        return flask.render_template('admin-db/userdb.html', sqlusers=sqlusers)
+    
 if len(sys.argv) == 1:
     sys.argv.append(8080)
 

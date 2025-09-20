@@ -325,11 +325,7 @@ class DatabaseManager:
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute('''
-                UPDATE predators
-                SET name=%s, description=%s, address=%s, phone=%s, email=%s, convicted=%s, socials=%s
-                WHERE id=%s
-            ''', (name, description, address, phone, email, int(convicted), socials, predator_id))
+            cursor.execute("UPDATE predators SET name=%s, description=%s, address=%s, phone=%s, email=%s, convicted=%s, socials=%s WHERE id=%s", (name, description, address, phone, email, int(convicted), socials, predator_id))
             conn.commit()
             conn.close()
             return True
@@ -371,3 +367,30 @@ class DatabaseManager:
         except Error as e:
             print(f"{Fore.RED}[-] Error deleting predator: {e}{Style.RESET_ALL}")
             return False
+
+    # this is a work in progress will NOT be used yet it is for deleting images and picking their id
+    def get_predator_images(self, predator_id):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute('SELECT image_path FROM predator_images WHERE id=%s', (predator_id,))
+            images = [r[0] for r in cursor.fetchall()]
+            conn.close()
+            
+            return images
+        except Error as e:
+            print(f"{Fore.RED}[-] Error fetching predator images: {e}{Style.RESET_ALL}")
+            return []
+    
+    def get_mysql_users(self):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT User, Host FROM mysql.user")
+            users = cursor.fetchall()
+            users = [(u.decode() if isinstance(u, (bytes, bytearray)) else u, h.decode() if isinstance(h, (bytes, bytearray)) else h) for u, h in users] # clankergpt did this
+            conn.close()
+            return users
+        except Error as e:
+            print(f"{Fore.RED}[-] Error fetching MySQL users: {e}{Style.RESET_ALL}")
+            return []
