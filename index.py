@@ -193,6 +193,7 @@ def add_predator():
         address = request.form.get('address', '').strip()
         phone = request.form.get('phone', '').strip()
         email = request.form.get('email', '').strip()
+        ipaddress = request.form.get('ipaddress', '').strip()
         description = request.form.get('description', '').strip()
         socials = request.form.get('socials', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
@@ -214,7 +215,7 @@ def add_predator():
         # -----------------------
         # Add predator to DB
         # -----------------------
-        if db.add_predator(name, description, address, phone, email, convicted, socials):
+        if db.add_predator(name, description, address, phone, email, ipaddress, convicted, socials):
             # Get the last added predator to retrieve its ID
             predator = db.get_all_predators()[-1]
             predator_id = predator['id']
@@ -280,6 +281,7 @@ def edit_predator(predator_id):
         address = request.form.get('address', '').strip()
         phone = request.form.get('phone', '').strip()
         email = request.form.get('email', '').strip()
+        ipaddress = request.form.get('ipaddress', '').strip()
         description = request.form.get('description', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
         socials = request.form.get('socials', '').strip()
@@ -288,7 +290,7 @@ def edit_predator(predator_id):
             flash('Name and Description are required.')
             return redirect(url_for('edit_predator', predator_id=predator_id))
 
-        if db.update_predator(predator_id, name, description, address, phone, email, convicted, socials):
+        if db.update_predator(predator_id, name, description, address, phone, email, ipaddress, convicted, socials):
             images = request.files.getlist('images')
             saved_filenames = []
 
@@ -330,6 +332,18 @@ def edit_predator(predator_id):
 
     return flask.render_template('database/edit_db.html', predator=predator)
 
+# TODO: add image deletion (on this exact line)
+
+@app.route('/sqlusers', methods=['GET'])
+@login_required
+def sqlusers():
+    if not current_user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    else:
+        sqlusers = db.get_mysql_users()
+        return flask.render_template('admin-db/userdb.html', sqlusers=sqlusers)
+    
 if len(sys.argv) == 1:
     sys.argv.append(8080)
 

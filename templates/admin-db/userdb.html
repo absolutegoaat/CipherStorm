@@ -3,20 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CipherStorm - Add User</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>CipherStorm - User Database</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="header">
         <h1 class="header-h1">CipherStorm</h1>
-        
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p style="color:red;">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
 
         <div class="navigation">
             <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
@@ -36,22 +28,30 @@
         </div>
     </div>
 
-    <div class="main-content">
-        <h1>Add New User</h1>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p style="color:red;">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <form method="POST">
-            <input type="text" name="username" placeholder="Username" required><br>
-            <input type="password" name="password" placeholder="Password" required><br>
-            <label for="is_admin">Is Admin:</label>
-            <input type="checkbox" name="is_admin" class="checkbox"><br>
-            <button type="submit">Add User</button>
-        </form>
+    <div class="container">
+        <div class="main-content">
+            <h1>Actions</h1>
+            <!-- <form..... -->
+        </div>
+
+        <div class="other-content">
+            <img src="/static/resources/mysql.png" alt="mysql" style="width: 100px; padding: 10px 10px 0px;">
+            <table>
+                <tr>
+                    <th>User</th>
+                    <th>Host</th>
+                </tr>
+                <tbody>
+                    {% for user, host in sqlusers %}
+                    <tr>
+                        <td>{{ user }}</td>
+                        <td>{{ host }}</td>
+                        <!-- actions ill be added-->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

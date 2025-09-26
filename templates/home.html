@@ -18,6 +18,9 @@
                 <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
                     <button type="submit" class="navigation-tabs">Manage Web Users</button>
                 </form>
+                <form action="{{ url_for('sqlusers') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage SQL Users</button>
+                </form>
             {% endif %}
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
                 <button type="submit" class="navigation-tabs">Logout</button>
@@ -27,12 +30,20 @@
 
     <div class="main-content">
         <h1>Welcome to CipherStorm</h1>
-        <p><strong>User:</strong> {{ current_user.username }}</p>       
+        <p><strong>User:</strong> {{ current_user.username }}</p> 
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for msg in messages %}
+                    <p style="color:red;">{{ msg }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <h2>Quick Actions</h2>
         <button type="button" style="height: 100px;" onclick="window.location.href='/predators'">View Database</button>
         <button type="button" style="height: 100px;" onclick="window.location.href='/predators/add'">Add Predator</button>
         {% if current_user.is_admin %}
             <button type="button" style="height: 100px;" onclick="window.location.href='/manage_users'">Manage Web Users</button>
+            <button type="button" style="height: 100px;" onclick="window.location.href='/sqlusers'">Manage SQL Users</button>
         {% endif %}
     </div>
 </body>
