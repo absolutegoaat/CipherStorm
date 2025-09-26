@@ -33,12 +33,13 @@
             <input type="text" id="address" name="address" placeholder="Address" value="{{ predator.address }}" style="width: 350px;">
             <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ predator.phone }}">
             <input type="email" id="email" name="email" placeholder="Email" value="{{ predator.email }}">
+            <input type="text" id="ipaddress" name="ipaddress" placeholder="IP Address" value="{{ predator.ipaddress }}">
             <textarea id="description" name="description" placeholder="Description">{{ predator.description }}</textarea>
             <textarea id="socials" name="socials" placeholder="Socials (e.g., Twitter, Facebook)">{{ predator.socials }}</textarea>
             <label for="convicted">Convicted?:</label>
             <input type="checkbox" id="convicted" name="convicted" class="checkbox" {% if predator.convicted %}checked{% endif %}>
             </br>
-            <button type="submit">Update {{ predator.name}}</button>
+            <button type="submit">Update {{ predator.name }}</button>
         </div>
     </form>
 </body>

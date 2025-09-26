@@ -64,6 +64,7 @@ class DatabaseManager:
                     address VARCHAR(255),
                     phone VARCHAR(50),
                     email VARCHAR(255),
+                    ipaddress VARCHAR(255),
                     description TEXT,
                     convicted BOOLEAN DEFAULT FALSE,
                     socials TEXT
@@ -234,19 +235,25 @@ class DatabaseManager:
             return False
 
     # -----------------------------
-    # Predator methods
+    # Predator methods (when adding a new info storer you need to add it here insert it)
     # -----------------------------
     
-    def add_predator(self, name, description, address=None, phone=None, email=None, convicted=False, socials=None, image_paths=None):
+    def add_predator(self, name, description, address=None, phone=None, email=None, ipaddress=None, convicted=False, socials=None, image_paths=None):
+        import json
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
 
+            # Convert socials list to JSON string if needed
+            if socials and isinstance(socials, list):
+                socials = json.dumps(socials)
+
             # Insert predator
             cursor.execute('''
-                INSERT INTO predators (name, description, address, phone, email, convicted, socials)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            ''', (name, description, address, phone, email, int(convicted), socials))
+                INSERT INTO predators (name, address, phone, email, ipaddress, description, convicted, socials)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (name, address, phone, email, ipaddress, description, int(convicted), socials))
+
             predator_id = cursor.lastrowid  # get the new predator's ID
 
             # Insert images if provided
@@ -264,6 +271,7 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error adding predator: {e}{Style.RESET_ALL}")
             return False
 
+
     def get_all_predators(self):
         try:
             conn = self.get_connection()
@@ -279,9 +287,10 @@ class DatabaseManager:
                     'address': row[2],
                     'phone': row[3],
                     'email': row[4],
-                    'description': row[5],
-                    'convicted': bool(row[6]),
-                    'socials': row[7]
+                    'ipaddress': row[5],
+                    'description': row[6],
+                    'convicted': bool(row[7]),
+                    'socials': row[8]
                 })
             return predators
         except Error as e:
@@ -291,7 +300,7 @@ class DatabaseManager:
     def get_predator(self, predator_id):
         try:
             conn = self.get_connection()
-            cursor = conn.cursor()
+            cursor = conn.cursor(dictionary=True)
 
             # Get predator info
             cursor.execute('SELECT * FROM predators WHERE id=%s', (predator_id,))
@@ -300,19 +309,20 @@ class DatabaseManager:
                 return None
 
             predator = {
-                'id': row[0],
-                'name': row[1],
-                'address': row[2],
-                'phone': row[3],
-                'email': row[4],
-                'description': row[5],
-                'convicted': bool(row[6]),
-                'socials': row[7]
+                'id': row['id'],
+                'name': row['name'],
+                'address': row['address'],
+                'phone': row['phone'],
+                'email': row['email'],
+                'ipaddress': row['ipaddress'],
+                'description': row['description'],
+                'convicted': bool(row['convicted']),
+                'socials': row['socials']
             }
 
             # Get images
             cursor.execute('SELECT image_path FROM predator_images WHERE predator_id=%s', (predator_id,))
-            images = [r[0] for r in cursor.fetchall()]
+            images = [r['image_path'] for r in cursor.fetchall()]
             predator['images'] = images
 
             conn.close()
@@ -321,11 +331,11 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error fetching predator: {e}{Style.RESET_ALL}")
             return None
 
-    def update_predator(self, predator_id, name, description, address=None, phone=None, email=None, convicted=False, socials=None):
+    def update_predator(self, predator_id, name, description, address=None, phone=None, email=None, ipaddress=None, convicted=False, socials=None):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute("UPDATE predators SET name=%s, description=%s, address=%s, phone=%s, email=%s, convicted=%s, socials=%s WHERE id=%s", (name, description, address, phone, email, int(convicted), socials, predator_id))
+            cursor.execute("UPDATE predators SET name=%s, description=%s, address=%s, phone=%s, email=%s, ipaddress=%s, convicted=%s, socials=%s WHERE id=%s", (name, description, address, phone, email, ipaddress, int(convicted), socials, predator_id))
             conn.commit()
             conn.close()
             return True

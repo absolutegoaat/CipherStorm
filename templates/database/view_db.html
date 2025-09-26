@@ -45,6 +45,7 @@
             {% endif %}
             <p><strong>Phone:</strong> {{ predator.phone }}</p>
             <p><strong>Email:</strong> {{ predator.email }}</p>
+            <p><strong>IP Address:</strong> {% if predator.ipaddress %}{{ predator.ipaddress }}{% else %} No IP Address listed. {% endif %}</p>
             <p><strong>Socials:</strong></p>
             <textarea style="width: 100%;" readonly>{{ predator.socials }}</textarea>
             <p><strong>Convicted:</strong> {{ 'Yes' if predator.convicted else 'No' }}</p>
@@ -52,7 +53,7 @@
                 <button type="submit">Go back to Database</button>
             </form>
             <form action="/predators/edit/{{ predator.id }}" method="get" style="margin-top: 10px;">
-                <button type="submit">Edit Predator</button>
+                <button type="submit">Edit</button>
             </form>
         </div>
     </div>
