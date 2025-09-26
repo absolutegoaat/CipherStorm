@@ -1,6 +1,7 @@
 # CipherStorm
 Pedator Database Manager
-i made this in 2 days LMFAO
+</br>
+NOT FOR THE PUBLIC
 
 # Setup
 ## Windows
