@@ -37,7 +37,7 @@ sudo systemctl disable mysql
 ```
 
 # Docker
-```docker-compose up --build``
+```docker-compose up --build```
 > [!NOTE]
 > CipherStorm may start without mysql starting up, wait until mysql is done and listening for connections and then start
 > CipherStorm by ```docker compose up cipherstorm```
