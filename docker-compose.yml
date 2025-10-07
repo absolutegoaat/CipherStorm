@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mysql:8.1
+    container_name: cs_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: cs_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: cs_db
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - db  
+
+  cipherstorm:
+    build: .
+    container_name: cipherstorm
+    ports:
+      - "8080:8080"
+    environment:
+      MYSQL_HOST: cs_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: mydb
+    depends_on:
+      - db  
+
+volumes:
+  db_data:
