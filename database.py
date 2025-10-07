@@ -2,12 +2,29 @@ import mysql.connector
 from mysql.connector import Error
 import hashlib
 from colorama import Fore, Style
+import platform
+import os
+
+def in_docker():
+    return os.path.exists("/.dockerenv")
 
 class DatabaseManager:
-    def __init__(self, host="localhost", user="root", password="", database="cipherstorm"):
+    def __init__(self, host="localhost", user="root", password="root", database="cipherstorm"):
         self.host = host
+        
+        if in_docker() == True:
+            self.host = "db"
+        else:
+            pass
+            
         self.user = user
         self.password = password
+        
+        if platform.system() == "Windows":
+            self.password = ""
+        else:
+            pass
+        
         self.database = database
         self.initialize_database()
     
