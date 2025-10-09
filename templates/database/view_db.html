@@ -22,18 +22,17 @@
     </div>
 
     <div class="container">
+        {% if predator.images %}
         <div class="other-content">
             <h2>Images</h2>
-            {% if predator.images %}
             {% for img in predator.images %}
             <img src="{{ url_for('static', filename=img) }}" alt="Predator Image"
                 style="width: auto; height: 350px; margin-bottom: 10px;">
             {% endfor %}
-            {% else %}
-            <p>No images available.</p>
-            {% endif %}
         </div>
-        <div class="main-content">
+        {% endif %}
+
+        <div class="main-content" {% if predator.images %} {% else %} style="width: 100%;" {% endif %}>
             <h2>Viewing {{ predator.name }}</h2>
             <p><strong>ID:</strong> {{ predator.id }}</p>
             <p><strong>Name:</strong> {{ predator.name }}</p>
