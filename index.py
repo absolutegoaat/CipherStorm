@@ -182,7 +182,7 @@ def edit_user(user_id):
 @app.route('/predators', methods=['GET'])
 @login_required
 def predators():
-    predators = db.get_all_predators()
+    predators = db.get_all_people()
     return flask.render_template('database/db.html', predators=predators)
 
 @app.route('/predators/add', methods=['GET', 'POST'])
@@ -194,6 +194,7 @@ def add_predator():
         phone = request.form.get('phone', '').strip()
         email = request.form.get('email', '').strip()
         ipaddress = request.form.get('ipaddress', '').strip()
+        label = request.form.get('label', '').strip()
         description = request.form.get('description', '').strip()
         socials = request.form.get('socials', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
@@ -204,7 +205,6 @@ def add_predator():
         images = request.files.getlist('images')
         saved_filenames = []
 
-        # Save images temporarily
         for file in images:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
@@ -215,13 +215,13 @@ def add_predator():
         # -----------------------
         # Add predator to DB
         # -----------------------
-        if db.add_predator(name, description, address, phone, email, ipaddress, convicted, socials):
+        if db.add_person(name, description, address, phone, email, ipaddress, label, convicted, socials):
             # Get the last added predator to retrieve its ID
-            predator = db.get_all_predators()[-1]
-            predator_id = predator['id']
+            predator = db.get_all_people()[-1]
+            person_id = predator['id']
 
             # Create folder for this predator
-            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
+            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{person_id}')
             os.makedirs(predator_folder, exist_ok=True)
 
             final_paths = []
@@ -229,10 +229,10 @@ def add_predator():
                 src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 dst = os.path.join(predator_folder, filename)
                 os.rename(src, dst)
-                final_paths.append(f'images/predator_{predator_id}/{filename}')
+                final_paths.append(f'images/predator_{person_id}/{filename}')
 
             # Update images in DB
-            db.update_predator_images(predator_id, final_paths)
+            db.update_person_images(person_id, final_paths)
 
             flash(f'{name} added successfully')
             return redirect(url_for('predators'))
@@ -243,37 +243,37 @@ def add_predator():
     return flask.render_template('database/add_db.html')
 
 
-@app.route('/predators/delete/<int:predator_id>', methods=['POST'])
+@app.route('/predators/delete/<int:person_id>', methods=['POST'])
 @login_required
-def delete_predator(predator_id):
+def delete_predator(person_id):
     if request.method == 'POST':
-        if db.delete_predator(predator_id):
-            flash(f'ID {predator_id} deleted successfully')
+        if db.delete_person(person_id):
+            flash(f'ID {person_id} deleted successfully')
         else:
-            flash(f'Failed to delete ID {predator_id}')
+            flash(f'Failed to delete ID {person_id}')
 
-    print(f"Deleting ID: {predator_id}")
+    print(f"Deleting ID: {person_id}")
     
-    flash(f'Predator with ID {predator_id} deleted successfully')
+    flash(f'Predator with ID {person_id} deleted successfully')
     return redirect(url_for('predators'))
 
-@app.route('/predators/view/<int:predator_id>', methods=['GET'])
+@app.route('/predators/view/<int:person_id>', methods=['GET'])
 @login_required
-def view_predator(predator_id):
-    predators = db.get_all_predators()
-    # predator = next((p for p in predators if p['id'] == predator_id), None)
-    predator = db.get_predator(predator_id=predator_id)
-    if predator:
-        return flask.render_template('database/view_db.html', predator=predator, url_parse=urllib.parse.quote)
+def view_predator(person_id):
+    people = db.get_all_people()
+    # person = next((p for p in people if p['id'] == person_id), None)
+    person = db.get_person(person_id=person_id)
+    if person:
+        return flask.render_template('database/view_db.html', person=person, url_parse=urllib.parse.quote)
     else:
-        flash(f'ID {predator_id} not found')
+        flash(f'ID {person_id} not found')
 
-@app.route('/predators/edit/<int:predator_id>', methods=['GET', 'POST'])
+@app.route('/predators/edit/<int:person_id>', methods=['GET', 'POST'])
 @login_required
-def edit_predator(predator_id):
-    predator = db.get_predator(predator_id=predator_id)
-    if not predator:
-        flash(f'Predator with ID {predator_id} not found')
+def edit_predator(person_id):
+    person = db.get_person(person_id)
+    if not person:
+        flash(f'Person with ID {person_id} not found')
         return redirect(url_for('predators'))
 
     if request.method == 'POST':
@@ -282,15 +282,16 @@ def edit_predator(predator_id):
         phone = request.form.get('phone', '').strip()
         email = request.form.get('email', '').strip()
         ipaddress = request.form.get('ipaddress', '').strip()
+        label = request.form.get('label', '').strip()
         description = request.form.get('description', '').strip()
         convicted = request.form.get('convicted', 'off') == 'on'
         socials = request.form.get('socials', '').strip()
 
         if not name or not description:
             flash('Name and Description are required.')
-            return redirect(url_for('edit_predator', predator_id=predator_id))
+            return redirect(url_for('edit_predator', person_id=person_id))
 
-        if db.update_predator(predator_id, name, description, address, phone, email, ipaddress, convicted, socials):
+        if db.update_person(person_id, name, description, address, phone, email, ipaddress, label, convicted, socials):
             images = request.files.getlist('images')
             saved_filenames = []
 
@@ -304,7 +305,7 @@ def edit_predator(predator_id):
                         # print()
                         saved_filenames.append(file.filename)
                     
-            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{predator_id}')
+            predator_folder = os.path.join(app.config['UPLOAD_FOLDER'], f'predator_{person_id}')
             os.makedirs(predator_folder, exist_ok=True)
 
             final_paths = []
@@ -312,9 +313,9 @@ def edit_predator(predator_id):
                 src = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 dst = os.path.join(predator_folder, filename)
                 os.rename(src, dst)
-                final_paths.append(f'images/predator_{predator_id}/{filename}')
+                final_paths.append(f'images/predator_{person_id}/{filename}')
                 
-            predator = db.get_predator(predator_id=predator_id)
+            predator = db.get_person(person_id=person_id)
             previous_paths = predator['images']
             
             for path in previous_paths:
@@ -322,15 +323,15 @@ def edit_predator(predator_id):
               
             # Update images in DB
             
-            db.update_predator_images(predator_id, final_paths)
+            db.update_person_images(person_id, final_paths)
 
             flash(f'{name} updated successfully')
             return redirect(url_for('predators'))
         else:
             flash(f'Failed to update {name}')
-            return redirect(url_for('edit_predator', predator_id=predator_id))
+            return redirect(url_for('edit_predator', person_id=person_id))
 
-    return flask.render_template('database/edit_db.html', predator=predator)
+    return flask.render_template('database/edit_db.html', person=person)
 
 # TODO: add image deletion (on this exact line)
 
