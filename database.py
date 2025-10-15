@@ -56,12 +56,11 @@ class DatabaseManager:
             raise
 
     def _create_tables(self):
-        """Create users and people tables in MySQL"""
+        """jah wtf this much tables :("""
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
 
-            # Users table
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,6 +96,16 @@ class DatabaseManager:
                     FOREIGN KEY (person_id) REFERENCES people(id) ON DELETE CASCADE
                 )
             ''')
+
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS api_keys (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    label VARCHAR(255),
+                    api_key TEXT NOT NULL,
+                    administrator BOOLEAN DEFAULT FALSE
+                )
+            ''')
+            # Administrator = accessing everything like an administrator account, as default its false.
 
             conn.commit()
             print(f"{Fore.GREEN}[+] Tables created successfully.{Style.RESET_ALL}")
@@ -423,3 +432,6 @@ class DatabaseManager:
         except Error as e:
             print(f"{Fore.RED}[-] Error fetching MySQL users: {e}{Style.RESET_ALL}")
             return []
+    
+    def get_all_apikeys(self):
+        print("[-] API is in the works")
