@@ -32,7 +32,7 @@
         <div class="main-content">
             <h1>Actions</h1>
             <form action="/predators/add" method="get">
-                <button type="submit">Add Predator</button>
+                <button type="submit">Add Person</button>
             </form>
         </div>
 
@@ -46,7 +46,7 @@
                 {% endif %}
             {% endwith %}
             <input type="text" id="search" placeholder="Search by name..." onkeyup="filterTable()">
-            <p>Total Predators: {{ predators|length }}</p>
+            <p>Total People: {{ predators|length }}</p>
             <table>
                 <thead>
                     <tr>

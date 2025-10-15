@@ -56,7 +56,7 @@ class DatabaseManager:
             raise
 
     def _create_tables(self):
-        """Create users and predators tables in MySQL"""
+        """Create users and people tables in MySQL"""
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
@@ -73,15 +73,16 @@ class DatabaseManager:
                 )
             ''')
 
-            # Predators table
+            # people table
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS predators (
+                CREATE TABLE IF NOT EXISTS people (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(255),
                     address VARCHAR(255),
                     phone VARCHAR(50),
                     email VARCHAR(255),
                     ipaddress VARCHAR(255),
+                    label TEXT,
                     description TEXT,
                     convicted BOOLEAN DEFAULT FALSE,
                     socials TEXT
@@ -89,11 +90,11 @@ class DatabaseManager:
             ''')
             # Predator images table 
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS predator_images (
+                CREATE TABLE IF NOT EXISTS people_images (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    predator_id INT NOT NULL,
+                    person_id INT NOT NULL,
                     image_path VARCHAR(255) NOT NULL,
-                    FOREIGN KEY (predator_id) REFERENCES predators(id) ON DELETE CASCADE
+                    FOREIGN KEY (person_id) REFERENCES people(id) ON DELETE CASCADE
                 )
             ''')
 
@@ -255,7 +256,7 @@ class DatabaseManager:
     # Predator methods (when adding a new info storer you need to add it here insert it)
     # -----------------------------
     
-    def add_predator(self, name, description, address=None, phone=None, email=None, ipaddress=None, convicted=False, socials=None, image_paths=None):
+    def add_person(self, name, description, address=None, phone=None, email=None, ipaddress=None, label=None, convicted=False, socials=None, image_paths=None):
         import json
         try:
             conn = self.get_connection()
@@ -267,19 +268,19 @@ class DatabaseManager:
 
             # Insert predator
             cursor.execute('''
-                INSERT INTO predators (name, address, phone, email, ipaddress, description, convicted, socials)
+                INSERT INTO people (name, address, phone, email, ipaddress, label, description, convicted, socials)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            ''', (name, address, phone, email, ipaddress, description, int(convicted), socials))
+            ''', (name, address, phone, email, ipaddress, label, description, int(convicted), socials))
 
-            predator_id = cursor.lastrowid  # get the new predator's ID
+            person_id = cursor.lastrowid  # get the new predator's ID
 
             # Insert images if provided
             if image_paths:
                 for path in image_paths:
                     cursor.execute('''
-                        INSERT INTO predator_images (predator_id, image_path)
+                        INSERT INTO people_images (person_id, image_path)
                         VALUES (%s, %s)
-                    ''', (predator_id, path))
+                    ''', (person_id, path))
 
             conn.commit()
             conn.close()
@@ -289,38 +290,38 @@ class DatabaseManager:
             return False
 
 
-    def get_all_predators(self):
+    def get_all_people(self):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM predators')
+            cursor.execute('SELECT * FROM people')
             rows = cursor.fetchall()
             conn.close()
-            predators = []
+            people = []
             for row in rows:
-                predators.append({
+                people.append({
                     'id': row[0],
                     'name': row[1],
                     'address': row[2],
                     'phone': row[3],
                     'email': row[4],
                     'ipaddress': row[5],
-                    'description': row[6],
-                    'convicted': bool(row[7]),
-                    'socials': row[8]
+                    'label': row[6],
+                    'description': row[7],
+                    'convicted': bool(row[8]),
+                    'socials': row[9]
                 })
-            return predators
+            return people
         except Error as e:
-            print(f"{Fore.RED}[-] Error getting all predators: {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[-] Error getting all people: {e}{Style.RESET_ALL}")
             return []
 
-    def get_predator(self, predator_id):
+    def get_person(self, person_id):
         try:
             conn = self.get_connection()
             cursor = conn.cursor(dictionary=True)
 
-            # Get predator info
-            cursor.execute('SELECT * FROM predators WHERE id=%s', (predator_id,))
+            cursor.execute('SELECT * FROM people WHERE id=%s', (person_id,))
             row = cursor.fetchone()
             if not row:
                 return None
@@ -332,13 +333,14 @@ class DatabaseManager:
                 'phone': row['phone'],
                 'email': row['email'],
                 'ipaddress': row['ipaddress'],
+                'label': row['label'],
                 'description': row['description'],
                 'convicted': bool(row['convicted']),
                 'socials': row['socials']
             }
 
             # Get images
-            cursor.execute('SELECT image_path FROM predator_images WHERE predator_id=%s', (predator_id,))
+            cursor.execute('SELECT image_path FROM people_images WHERE person_id=%s', (person_id,))
             images = [r['image_path'] for r in cursor.fetchall()]
             predator['images'] = images
 
@@ -348,30 +350,31 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error fetching predator: {e}{Style.RESET_ALL}")
             return None
 
-    def update_predator(self, predator_id, name, description, address=None, phone=None, email=None, ipaddress=None, convicted=False, socials=None):
+    def update_person(self, person_id, name, description, address=None, phone=None, email=None, ipaddress=None, label=None, convicted=False, socials=None):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute("UPDATE predators SET name=%s, description=%s, address=%s, phone=%s, email=%s, ipaddress=%s, convicted=%s, socials=%s WHERE id=%s", (name, description, address, phone, email, ipaddress, int(convicted), socials, predator_id))
+            cursor.execute("UPDATE people SET name=%s, description=%s, address=%s, phone=%s, email=%s, ipaddress=%s, label=%s, convicted=%s, socials=%s WHERE id=%s", 
+                           (name, description, address, phone, email, ipaddress, label, int(convicted), socials, person_id))
             conn.commit()
             conn.close()
             return True
         except Error as e:
-            print(f"{Fore.RED}[-] Error updating predator: {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[-] Error updating person: {e}{Style.RESET_ALL}")
             return False
 
-    def update_predator_images(self, predator_id, new_image_paths):
+    def update_person_images(self, person_id, new_image_paths):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
 
             # Delete old images
-            cursor.execute('DELETE FROM predator_images WHERE predator_id=%s', (predator_id,))
+            cursor.execute('DELETE FROM people_images WHERE person_id=%s', (person_id,))
 
             # Insert new images
             for path in new_image_paths:
-                cursor.execute('INSERT INTO predator_images (predator_id, image_path) VALUES (%s, %s)',
-                               (predator_id, path))
+                cursor.execute('INSERT INTO people_images (person_id, image_path) VALUES (%s, %s)',
+                               (person_id, path))
 
             conn.commit()
             conn.close()
@@ -380,14 +383,14 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error updating predator images: {e}{Style.RESET_ALL}")
             return False
 
-    def delete_predator(self, predator_id):
+    def delete_person(self, person_id):
         """
         Delete a predator. Images are deleted automatically in the DB due to ON DELETE CASCADE.
         """
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM predators WHERE id = %s', (predator_id,))
+            cursor.execute('DELETE FROM people WHERE id = %s', (person_id,))
             conn.commit()
             conn.close()
             return True
@@ -395,12 +398,11 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error deleting predator: {e}{Style.RESET_ALL}")
             return False
 
-    # this is a work in progress will NOT be used yet it is for deleting images and picking their id
-    def get_predator_images(self, predator_id):
+    def get_person_images(self, person_id):
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
-            cursor.execute('SELECT image_path FROM predator_images WHERE id=%s', (predator_id,))
+            cursor.execute('SELECT image_path FROM people_images WHERE id=%s', (person_id,))
             images = [r[0] for r in cursor.fetchall()]
             conn.close()
             

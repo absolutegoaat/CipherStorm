@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CipherStorm - Viewing {{ predator.name }}</title>
+    <title>CipherStorm - Viewing {{ person.name }}</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -22,36 +22,36 @@
     </div>
 
     <div class="container">
-        {% if predator.images %}
+        {% if person.images %}
         <div class="other-content">
             <h2>Images</h2>
-            {% for img in predator.images %}
+            {% for img in person.images %}
             <img src="{{ url_for('static', filename=img) }}" alt="Predator Image"
                 style="width: auto; height: 350px; margin-bottom: 10px;">
             {% endfor %}
         </div>
         {% endif %}
 
-        <div class="main-content" {% if predator.images %} {% else %} style="width: 100%;" {% endif %}>
-            <h2>Viewing {{ predator.name }}</h2>
-            <p><strong>ID:</strong> {{ predator.id }}</p>
-            <p><strong>Name:</strong> {{ predator.name }}</p>
+        <div class="main-content" {% if person.images %} {% else %} style="width: 100%;" {% endif %}>
+            <h2>Viewing {{ person.name }}</h2>
+            <p><strong>ID:</strong> {{ person.id }}</p>
+            <p><strong>Name:</strong> {{ person.name }}</p>
             <p><strong>Description:</strong></p>
-            <textarea style="width: 100%;" readonly>{{ predator.description }}</textarea>
-            <p><strong>Address:</strong> {{ predator.address }}</p>
-            {% if predator.address %}
-            <iframe width="520" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="{{ 'https://maps.google.com/maps?width=520&height=400&hl=en&q=' + url_parse(predator.address) + '&t=&z=12&ie=UTF8&iwloc=B&output=embed' }}"></iframe> <a href='https://www.acadoo.de/leistungen/ghostwriter-doktorarbeit/'>Dissertation schreiben Unterstützung</a> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=7e9825197ba1121d8f6a51837a7f3281613699ea'></script>
+            <textarea style="width: 100%;" readonly>{{ person.description }}</textarea>
+            <p><strong>Address:</strong> {{ person.address }}</p>
+            {% if person.address %}
+            <iframe width="520" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="{{ 'https://maps.google.com/maps?width=520&height=400&hl=en&q=' + url_parse(person.address) + '&t=&z=12&ie=UTF8&iwloc=B&output=embed' }}"></iframe> <a href='https://www.acadoo.de/leistungen/ghostwriter-doktorarbeit/'>Dissertation schreiben Unterstützung</a> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=7e9825197ba1121d8f6a51837a7f3281613699ea'></script>
             {% endif %}
-            <p><strong>Phone:</strong> {{ predator.phone }}</p>
-            <p><strong>Email:</strong> {{ predator.email }}</p>
-            <p><strong>IP Address:</strong> {% if predator.ipaddress %}{{ predator.ipaddress }}{% else %} No IP Address listed. {% endif %}</p>
+            <p><strong>Phone:</strong> {{ person.phone }}</p>
+            <p><strong>Email:</strong> {{ person.email }}</p>
+            <p><strong>IP Address:</strong> {% if person.ipaddress %}{{ person.ipaddress }}{% else %} No IP Address listed. {% endif %}</p>
             <p><strong>Socials:</strong></p>
-            <textarea style="width: 100%;" readonly>{{ predator.socials }}</textarea>
-            <p><strong>Convicted:</strong> {{ 'Yes' if predator.convicted else 'No' }}</p>
+            <textarea style="width: 100%;" readonly>{{ person.socials }}</textarea>
+            <p><strong>Convicted:</strong> {{ 'Yes' if person.convicted else 'No' }}</p>
             <form action="/predators" method="get">
                 <button type="submit">Go back to Database</button>
             </form>
-            <form action="/predators/edit/{{ predator.id }}" method="get" style="margin-top: 10px;">
+            <form action="/predators/edit/{{ person.id }}" method="get" style="margin-top: 10px;">
                 <button type="submit">Edit</button>
             </form>
         </div>
