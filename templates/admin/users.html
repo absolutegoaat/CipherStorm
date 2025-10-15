@@ -29,6 +29,9 @@
                 <form action="{{ url_for('sqlusers') }}" method="get" style="display:inline;">
                     <button type="submit" class="navigation-tabs">Manage SQL Users</button>
                 </form>
+                <form action="{{ url_for('api') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">API</button>
+                </form>
             {% endif %}
             <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
                 <button type="submit" class="navigation-tabs">Logout</button>

@@ -344,6 +344,15 @@ def sqlusers():
     else:
         sqlusers = db.get_mysql_users()
         return flask.render_template('admin-db/userdb.html', sqlusers=sqlusers)
+
+@app.route('/api', methods=['GET'])
+@login_required
+def api():
+    if not current_user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    else:
+        return flask.render_template('api/api.html')
     
 if len(sys.argv) == 1:
     sys.argv.append(8080)
