@@ -40,6 +40,7 @@
         </div>
 
         <div class="other-content">
+        {% if people %}
             <h1>Database</h1>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -49,7 +50,7 @@
                 {% endif %}
             {% endwith %}
             <input type="text" id="search" placeholder="Search by name..." onkeyup="filterTable()">
-            <p>Total People: {{ predators|length }}</p>
+            <p>Total People: {{ peoples|length }}</p>
             <table>
                 <thead>
                     <tr>
@@ -63,14 +64,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for predator in predators %}
+                    {% for people in peoples %}
                     <tr>
-                        <td>{{ predator.id }}</td>
-                        <td>{{ predator.name }}</td>
-                        <td>{{ predator.address }}</td>
-                        <td>{{ predator.phone }}</td>
-                        <td>{{ predator.email }}</td>
-                        <td>{{ 'Yes' if predator.convicted else 'No' }}</td>
+                        <td>{{ people.id }}</td>
+                        <td>{{ people.name }}</td>
+                        <td>{{ people.address }}</td>
+                        <td>{{ people.phone }}</td>
+                        <td>{{ people.email }}</td>
+                        <td>{{ 'Yes' if people.convicted else 'No' }}</td>
                         <td>
                             <form action="/predators/edit/{{ predator.id }}" method="get" style="display:inline;">
                                 <button type="submit">Edit</button>
@@ -88,6 +89,9 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p>No people found.</p>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -182,8 +182,8 @@ def edit_user(user_id):
 @app.route('/predators', methods=['GET'])
 @login_required
 def predators():
-    predators = db.get_all_people()
-    return flask.render_template('database/db.html', predators=predators)
+    people = db.get_all_people()
+    return flask.render_template('database/db.html', people=people)
 
 @app.route('/predators/add', methods=['GET', 'POST'])
 @login_required
@@ -352,7 +352,8 @@ def api():
         flash('Access denied.')
         return redirect(url_for('dashboard'))
     else:
-        return flask.render_template('api/api.html')
+        apikeys = db.get_all_apikeys()
+        return flask.render_template('api/api.html', apikeys=apikeys)
     
 if len(sys.argv) == 1:
     sys.argv.append(8080)

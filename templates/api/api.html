@@ -34,7 +34,7 @@
     <div class="container">
         <div class="main-content">
             <h2>Actions</h2>
-            <!--form...-->
+            <button>Make API Key</button> <!--make this a form later-->
         </div>
 
         <div class="other-content">
@@ -44,7 +44,30 @@
                 so they can only access people data and not users.
                 An API Documentation will be available soon.
             </p>
-            <!--table... building the backend of the api keys-->
+            {% if apikeys %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Label</th>
+                        <th>Key</th>
+                        <th>Administrative?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apikeys in apikeys %}
+                    <tr>
+                        <td>{{ apikeys.id }}</td>
+                        <td>{{ apikeys.label }}</td>
+                        <td>{{ apikeys.api_key }}</td>
+                        <td>{{ apikeys.administator }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No API Keys Found</p>
+            {% endif %}
         </div>
     </div>
 </body>
