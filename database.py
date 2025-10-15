@@ -434,4 +434,20 @@ class DatabaseManager:
             return []
     
     def get_all_apikeys(self):
-        print("[-] API is in the works")
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM api_keys")
+            apikeys = cursor.fetchall()
+            conn.close()
+            keys = []
+            for row in apikeys:
+                keys.append({
+                    'id': row[0],
+                    'label': row[1],
+                    'api_key': row[2],
+                    'administrator': row[3]
+                })
+            return keys
+        except Error as e:
+            print(f"error {e}")
