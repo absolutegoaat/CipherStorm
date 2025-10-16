@@ -11,3 +11,8 @@ def get_people():
     people = db.get_all_people()
     
     return jsonify(people)
+
+@people_bp.route("/api/people/<int:person_id>")
+@require_api_key
+def get_person():
+    print() #placeholder
