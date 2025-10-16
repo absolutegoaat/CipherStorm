@@ -1,6 +1,8 @@
 import flask
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from database import DatabaseManager
+from api.fetchpeople import people_bp
+from api.keygen import generate_key
 from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
 from colorama import init
@@ -10,6 +12,7 @@ import os
 import sys
 
 app = flask.Flask(__name__)
+app.register_blueprint(people_bp)
 
 app.secret_key = 'cipherthestorm'
 
@@ -352,6 +355,36 @@ def api():
     else:
         apikeys = db.get_all_apikeys()
         return flask.render_template('api/api.html', apikeys=apikeys)
+    
+@app.route('/api/add', methods=['POST', 'GET'], endpoint='addkey')
+@login_required
+def add_key():
+    if not current_user.is_admin:
+        flash("Access Denied.")
+        return redirect(url_for('dashboard'))
+    else:
+        key = None
+                
+        if request.method == 'POST':
+            label = request.form.get('label', '').strip()
+            key = request.form.get('key', '').strip()
+            administrator = request.form.get('admin', 'off') == 'on'
+            
+            if not key:
+                key = generate_key()
+            
+            if db.add_apikey(label, key, administrator):
+                keys = db.get_all_apikeys()[-1]
+                idkey = keys['id']
+                
+                flash(f"{label} has been added")
+                return redirect(url_for('api'))
+            else:
+                flash(f"Failed to add {label}")
+                return redirect(url_for('api'))
+            
+        return flask.render_template('api/api_new.html', generated_key=key)
+        
     
 if len(sys.argv) == 1:
     sys.argv.append(8080)

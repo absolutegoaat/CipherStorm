@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherStorm - Add API Key</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1 class="header-h1">CipherStorm</h1>
+
+        <div class="navigation">
+            <form action="{{ url_for('dashboard') }}" method="get" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Home</button>
+            </form>
+            {% if current_user.is_admin %}
+                <form action="{{ url_for('manage_users') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage Web Users</button>
+                </form>
+                <form action="{{ url_for('sqlusers') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">Manage SQL Users</button>
+                </form>
+                <form action="{{ url_for('api') }}" method="get" style="display:inline;">
+                    <button type="submit" class="navigation-tabs">API</button>
+                </form>
+            {% endif %}
+            <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+                <button type="submit" class="navigation-tabs">Logout</button>
+            </form>
+        </div>
+    </div>
+
+        <div class="container">
+            <div class="main-content" style="padding: 10px; width: 100%;">
+                <form action="{{ url_for('addkey') }}" method="post">
+                    <label for="label">Label:</label>
+                    <input type="text" id="label" name="label" style="width: 100%;" required>
+                    </br> 
+
+                    <label for="key">Key <strong>(if nothing is entered, CipherStorm will make a key for you.)</strong>: </label>
+                    <input type="text" id="key" name="key" value="{{ generated_key.generated_key or '' }}" style="width: 100%;">
+                    </br>
+
+                    <label for="admin">Administrative? </label>
+                    <input type="checkbox" id="admin" name="admin">
+                    </br>
+
+                    <button type="submit">Done</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

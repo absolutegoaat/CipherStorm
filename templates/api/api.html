@@ -34,7 +34,9 @@
     <div class="container">
         <div class="main-content">
             <h2>Actions</h2>
-            <button>Make API Key</button> <!--make this a form later-->
+            <form action="{{ url_for('addkey') }}" method="get">
+                <button type="submit">Make API Key</button>
+            </form>
         </div>
 
         <div class="other-content">

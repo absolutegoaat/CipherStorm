@@ -101,7 +101,7 @@ class DatabaseManager:
                 CREATE TABLE IF NOT EXISTS api_keys (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     label VARCHAR(255),
-                    api_key TEXT NOT NULL,
+                    api_key TEXT NOT NULL UNIQUE,
                     administrator BOOLEAN DEFAULT FALSE
                 )
             ''')
@@ -433,6 +433,12 @@ class DatabaseManager:
             print(f"{Fore.RED}[-] Error fetching MySQL users: {e}{Style.RESET_ALL}")
             return []
     
+    '''
+    -------------------
+    API FUNCTIONS
+    -------------------
+    '''
+    
     def get_all_apikeys(self):
         try:
             conn = self.get_connection()
@@ -450,4 +456,37 @@ class DatabaseManager:
                 })
             return keys
         except Error as e:
-            print(f"error {e}")
+            print(f"[-] Error has occured: {e}")
+    
+    def validate_api_key(self, api_key):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT id FROM api_keys WHERE api_key=%s", (api_key,))
+            result = cursor.fetchone()
+            conn.close()
+            # Returns True if a matching API key exists
+            return result is not None
+        except Error as e:
+            print(f"[-] Error has occured {e}")
+            return False
+
+        
+    def add_apikey(self, label=None, key=None, administrator=False):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO api_keys (label, api_key, administrator)
+                VALUES (%s, %s, %s)
+            ''', (label, key, administrator))
+            
+            key_id = cursor.lastrowid
+            
+            conn.commit()
+            conn.close()
+            return True
+        except Error as e:
+            print(f"{Fore.RED}[-] Error has occurred: {e}{Style.RESET_ALL}")
+            return False
