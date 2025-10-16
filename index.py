@@ -1,7 +1,7 @@
 import flask
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from database import DatabaseManager
-from api.fetchpeople import people_bp
+from api.main import api
 from api.keygen import generate_key
 from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
@@ -12,7 +12,7 @@ import os
 import sys
 
 app = flask.Flask(__name__)
-app.register_blueprint(people_bp)
+app.register_blueprint(api)
 
 app.secret_key = 'cipherthestorm'
 

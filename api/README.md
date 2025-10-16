@@ -9,7 +9,7 @@ submit an issue on github! :D
 # Authentication
 In order to authenticate to the server, you'll have to create a
 api token thru an administrator account, after that, authenticate 
-thru ```x-api-key``` as the header then you api token as the value.
+thru ```x-api-key``` as the header then you insert your api token as the value.
 
 Here's an example in python
 ```py
@@ -34,6 +34,11 @@ if __name__ == "__main__":
 ```
 
 Obviously you can change the ```User-Agent``` but yea 
+
+# /api/token_validate
+```Method: GET```
+
+This endpoint will validate if your token is valid or not.
 
 # /api/people
 ```Method: GET```
