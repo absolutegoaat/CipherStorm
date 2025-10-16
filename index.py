@@ -384,7 +384,19 @@ def add_key():
                 return redirect(url_for('api'))
             
         return flask.render_template('api/api_new.html', generated_key=key)
-        
+
+@app.route('/api/delete/<int:api_id>', methods=['POST', 'GET'])
+@login_required
+def delete_key(api_id):
+    if not current_user.is_admin:
+        flash('Access Denied.')
+        return redirect(url_for('dashboard'))
+    if db.delete_apikey(api_id):
+        flash(f'API Key {api_id} successfully deleted')
+    else:
+        flash(f'Failed to delete API {api_id}')   
+
+    return redirect(url_for('api'))             
     
 if len(sys.argv) == 1:
     sys.argv.append(8080)

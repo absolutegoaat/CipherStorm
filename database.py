@@ -101,7 +101,7 @@ class DatabaseManager:
                 CREATE TABLE IF NOT EXISTS api_keys (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     label VARCHAR(255),
-                    api_key TEXT NOT NULL UNIQUE,
+                    api_key TEXT NOT NULL,
                     administrator BOOLEAN DEFAULT FALSE
                 )
             ''')
@@ -484,6 +484,19 @@ class DatabaseManager:
             
             key_id = cursor.lastrowid
             
+            conn.commit()
+            conn.close()
+            return True
+        except Error as e:
+            print(f"{Fore.RED}[-] Error has occurred: {e}{Style.RESET_ALL}")
+            return False
+
+    def delete_apikey(self, api_id):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute('DELETE FROM api_keys WHERE id = %s', (api_id,))
             conn.commit()
             conn.close()
             return True
