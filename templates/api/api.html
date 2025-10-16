@@ -60,7 +60,7 @@
                         <td>{{ apikeys.id }}</td>
                         <td>{{ apikeys.label }}</td>
                         <td>{{ apikeys.api_key }}</td>
-                        <td>{{ apikeys.administator }}</td>
+                        <td>{{ "Yes" if apikeys.administrator == 1 else "No" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

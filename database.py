@@ -278,7 +278,7 @@ class DatabaseManager:
             # Insert predator
             cursor.execute('''
                 INSERT INTO people (name, address, phone, email, ipaddress, label, description, convicted, socials)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (name, address, phone, email, ipaddress, label, description, int(convicted), socials))
 
             person_id = cursor.lastrowid  # get the new predator's ID

@@ -237,7 +237,7 @@ def add_predator():
             flash(f'{name} added successfully')
             return redirect(url_for('predators'))
         else:
-            flash(f'Failed to add predator {name}')
+            flash(f'Failed to add {name}')
             return redirect(url_for('add_predator'))
 
     return flask.render_template('database/add_db.html')
@@ -254,15 +254,13 @@ def delete_predator(person_id):
 
     print(f"Deleting ID: {person_id}")
     
-    flash(f'Predator with ID {person_id} deleted successfully')
     return redirect(url_for('predators'))
 
 @app.route('/predators/view/<int:person_id>', methods=['GET'])
 @login_required
 def view_predator(person_id):
-    people = db.get_all_people()
-    # person = next((p for p in people if p['id'] == person_id), None)
     person = db.get_person(person_id=person_id)
+    
     if person:
         return flask.render_template('database/view_db.html', person=person, url_parse=urllib.parse.quote)
     else:
