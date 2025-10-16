@@ -22,7 +22,7 @@ BASE = "http://localhost:8080/api/people"
 def main():
     headers = {
         "x-api-key": f"{key}",
-        "User-Agent": "insomnia/11.6.1"
+        "User-Agent": "insomnia/11.6.1" # you can change this
     }
     r = requests.get(f"{BASE}", headers=headers)
     r.raise_for_status()
@@ -32,8 +32,6 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-
-Obviously you can change the ```User-Agent``` but yea 
 
 # /api/token_validate
 ```Method: GET```
