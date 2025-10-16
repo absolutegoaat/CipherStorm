@@ -471,6 +471,22 @@ class DatabaseManager:
             print(f"[-] Error has occured {e}")
             return False
 
+    def validate_api_administration(self, api_key):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT administrator FROM api_keys WHERE api_key=%s", api_key,)
+            result = cursor.fetchone()
+            conn.close()
+
+            if result and result[0] == 1:
+                return True
+                
+            return False
+        except Error as e:
+            print(f"[-] Error has Occurred: {e}")
+            return False
+
         
     def add_apikey(self, label=None, key=None, administrator=False):
         try:

@@ -12,6 +12,13 @@ def validate():
         'message': 'API Token is valid'
     })
 
+@api.route("/api/users", methods=["GET"])
+@require_api_key
+@require_administrator
+def get_users():
+    users = db.get_all_users()
+
+    return jsonify(users)
 
 @api.route("/api/people", methods=["GET"])
 @require_api_key
