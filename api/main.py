@@ -24,12 +24,13 @@ def get_users():
 @require_api_key
 def get_people():
     people = db.get_all_people()
+    
     return jsonify(people)
 
 @api.route("/api/people/<int:person_id>")
 @require_api_key
 def get_person(person_id):
-    person = db.get_person(person_id=person)
+    person = db.get_person(person_id=person_id)
 
     if person:
         return jsonify(person)

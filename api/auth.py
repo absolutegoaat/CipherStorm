@@ -23,8 +23,8 @@ def require_administrator(f):
     def decorated(*args, **kwargs):
         api_key = request.headers.get("x-api-key")
         
-        if not db.validate_api_administration(api_key):
-            return jsonify({"message": "Unauthorized"}), 403
+        if db.validate_api_administration(api_key) == 0:
+            return jsonify({"message": "Authorized 403"})
         else:
             return f(*args, **kwargs)
         
