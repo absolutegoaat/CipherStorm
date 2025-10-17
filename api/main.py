@@ -27,7 +27,7 @@ def get_people():
     
     return jsonify(people)
 
-@api.route("/api/people/<int:person_id>")
+@api.route("/api/people/<int:person_id>", methods=["GET"])
 @require_api_key
 def get_person(person_id):
     person = db.get_person(person_id=person_id)

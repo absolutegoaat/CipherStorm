@@ -367,10 +367,11 @@ def add_key():
                 
         if request.method == 'POST':
             label = request.form.get('label', '').strip()
-            key = request.form.get('key', '').strip()
             administrator = request.form.get('admin', 'off') == 'on'
             
-            if not key:
+            key = None
+            
+            if key == None:
                 key = generate_key()
             
             if db.add_apikey(label, key, administrator):
