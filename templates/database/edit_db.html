@@ -24,38 +24,43 @@
         <div class="other-content" style="margin-right: 10px;">
             <h2>Images</h2>
             <p style="color: grey;"><strong>Disclaimer: If your gonna add images please make sure they dont have a space in the filename</strong>, images you've submitted will be shown in the viewer it is not shown here for styling reasons (will be temporary), you can also select multiple images</p>
-            <input type="file" class="file-input" accept="image/*" name="images" multiple>
+            <input type="file" class="file-input" accept="image/*" name="images" style="width: 100%;" multiple>
         </div>
 
         <div class="main-content">
             <h1>Editing {{ person.name }}</h1>
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" placeholder="Name/Username" value="{{ person.name }}" style="width: 400px;" required>
+            <input type="text" id="name" name="name" placeholder="Name/Username" value="{{ person.name }}" style="width: 100%;" required>
 
             <label type="text" for="address">Address:</label>
-            <input type="text" id="address" name="address" placeholder="Address" value="{{ person.address }}" style="width: 350px;">
+            <input type="text" id="address" name="address" placeholder="Address" value="{{ person.address }}" style="width: 100%;">
 
             <label for="phone">Phone:</label>
-            <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ person.phone }}">
+            <input type="text" id="phone" name="phone" placeholder="Phone" value="{{ person.phone }}" style="width: 100%;">
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Email" value="{{ person.email }}">
+            <input type="email" id="email" name="email" placeholder="Email" value="{{ person.email }}" style="width: 100%;">
             </br>
 
             <label for="ipaddress">IP Address:</label>
-            <input type="text" id="ipaddress" name="ipaddress" placeholder="IP Address" value="{{ person.ipaddress }}">
+            <input type="text" id="ipaddress" name="ipaddress" placeholder="IP Address" value="{{ person.ipaddress }}" style="width: 100%;">
             </br>
 
             <label for="description">Description:</label>
-            <textarea id="description" name="description" placeholder="Description">{{ person.description }}</textarea>
+            <textarea id="description" name="description" placeholder="Description" style="width: 100%;">{{ person.description }}</textarea>
 
             <label for="socials">Socials:</label>
-            <textarea id="socials" name="socials" placeholder="Socials (e.g., Twitter, Facebook)">{{ person.socials }}</textarea>
+            <textarea id="socials" name="socials" placeholder="Socials (e.g., Twitter, Facebook)" style="width: 100%;">{{ person.socials }}</textarea>
+            </br>
+
+            <label for="label">Labels:</label>
+            <input type="text" id="label" name="label" placeholder="Labels (e.g., Dangerous, Do not Interact.)" value="{{ person.label }}" style="width: 40%;">
             </br>
 
             <label for="convicted">Convicted?:</label>
             <input type="checkbox" id="convicted" name="convicted" class="checkbox" {% if person.convicted %}checked{% endif %}>
             </br>
+            
             <button type="submit">Update {{ person.name }}</button>
         </div>
     </form>

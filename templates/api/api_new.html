@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CipherStorm - Dashboard</title>
+    <title>CipherStorm - Add API Key</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -31,23 +31,25 @@
         </div>
     </div>
 
-    <div class="main-content">
-        <h1>Welcome to CipherStorm</h1>
-        <p><strong>User:</strong> {{ current_user.username }}</p> 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for msg in messages %}
-                    <p style="color:red;">{{ msg }}</p>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <h2>Quick Actions</h2>
-        <button type="button" style="height: 100px;" onclick="window.location.href='/predators'">View Database</button>
-        <button type="button" style="height: 100px;" onclick="window.location.href='/predators/add'">Add Person</button>
-        {% if current_user.is_admin %}
-            <button type="button" style="height: 100px;" onclick="window.location.href='/manage_users'">Manage Web Users</button>
-            <button type="button" style="height: 100px;" onclick="window.location.href='/sqlusers'">Manage SQL Users</button>
-        {% endif %}
+        <div class="container">
+            <div class="main-content" style="padding: 10px; width: 100%;">
+                <form action="{{ url_for('addkey') }}" method="post">
+                    <label for="label">Label:</label>
+                    <input type="text" id="label" name="label" style="width: 100%;" required>
+                    </br> 
+
+                    <label for="key">Key <strong>(if nothing is entered, CipherStorm will make a key for you.)</strong>: </label>
+                    <input type="text" id="key" name="key" value="{{ generated_key.generated_key or '' }}" style="width: 100%;">
+                    </br>
+
+                    <label for="admin">Administrative? </label>
+                    <input type="checkbox" id="admin" name="admin">
+                    </br>
+
+                    <button type="submit">Done</button>
+                </form>
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -47,6 +47,7 @@
             <p><strong>IP Address:</strong> {% if person.ipaddress %}{{ person.ipaddress }}{% else %} No IP Address listed. {% endif %}</p>
             <p><strong>Socials:</strong></p>
             <textarea style="width: 100%;" readonly>{{ person.socials }}</textarea>
+            <p><strong>Label(s): </strong>{{ person.label }}</p>
             <p><strong>Convicted:</strong> {{ 'Yes' if person.convicted else 'No' }}</p>
             <form action="/predators" method="get">
                 <button type="submit">Go back to Database</button>

@@ -1,6 +1,8 @@
 import flask
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from database import DatabaseManager
+from api.main import api
+from api.keygen import generate_key
 from flask import request, redirect, url_for, flash
 from colorama import Fore, Style
 from colorama import init
@@ -10,6 +12,7 @@ import os
 import sys
 
 app = flask.Flask(__name__)
+app.register_blueprint(api)
 
 app.secret_key = 'cipherthestorm'
 
@@ -182,8 +185,8 @@ def edit_user(user_id):
 @app.route('/predators', methods=['GET'])
 @login_required
 def predators():
-    predators = db.get_all_people()
-    return flask.render_template('database/db.html', predators=predators)
+    people = db.get_all_people()
+    return flask.render_template('database/db.html', people=people)
 
 @app.route('/predators/add', methods=['GET', 'POST'])
 @login_required
@@ -237,7 +240,7 @@ def add_predator():
             flash(f'{name} added successfully')
             return redirect(url_for('predators'))
         else:
-            flash(f'Failed to add predator {name}')
+            flash(f'Failed to add {name}')
             return redirect(url_for('add_predator'))
 
     return flask.render_template('database/add_db.html')
@@ -254,15 +257,13 @@ def delete_predator(person_id):
 
     print(f"Deleting ID: {person_id}")
     
-    flash(f'Predator with ID {person_id} deleted successfully')
     return redirect(url_for('predators'))
 
 @app.route('/predators/view/<int:person_id>', methods=['GET'])
 @login_required
 def view_predator(person_id):
-    people = db.get_all_people()
-    # person = next((p for p in people if p['id'] == person_id), None)
     person = db.get_person(person_id=person_id)
+    
     if person:
         return flask.render_template('database/view_db.html', person=person, url_parse=urllib.parse.quote)
     else:
@@ -344,6 +345,58 @@ def sqlusers():
     else:
         sqlusers = db.get_mysql_users()
         return flask.render_template('admin-db/userdb.html', sqlusers=sqlusers)
+
+@app.route('/api', methods=['GET'])
+@login_required
+def api():
+    if not current_user.is_admin:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    else:
+        apikeys = db.get_all_apikeys()
+        return flask.render_template('api/api.html', apikeys=apikeys)
+    
+@app.route('/api/add', methods=['POST', 'GET'], endpoint='addkey')
+@login_required
+def add_key():
+    if not current_user.is_admin:
+        flash("Access Denied.")
+        return redirect(url_for('dashboard'))
+    else:
+        key = None
+                
+        if request.method == 'POST':
+            label = request.form.get('label', '').strip()
+            key = request.form.get('key', '').strip()
+            administrator = request.form.get('admin', 'off') == 'on'
+            
+            if not key:
+                key = generate_key()
+            
+            if db.add_apikey(label, key, administrator):
+                keys = db.get_all_apikeys()[-1]
+                idkey = keys['id']
+                
+                flash(f"{label} has been added")
+                return redirect(url_for('api'))
+            else:
+                flash(f"Failed to add {label}")
+                return redirect(url_for('api'))
+            
+        return flask.render_template('api/api_new.html', generated_key=key)
+
+@app.route('/api/delete/<int:api_id>', methods=['POST', 'GET'])
+@login_required
+def delete_key(api_id):
+    if not current_user.is_admin:
+        flash('Access Denied.')
+        return redirect(url_for('dashboard'))
+    if db.delete_apikey(api_id):
+        flash(f'API Key {api_id} successfully deleted')
+    else:
+        flash(f'Failed to delete API {api_id}')   
+
+    return redirect(url_for('api'))             
     
 if len(sys.argv) == 1:
     sys.argv.append(8080)

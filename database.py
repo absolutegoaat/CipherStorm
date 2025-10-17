@@ -9,7 +9,7 @@ def in_docker():
     return os.path.exists("/.dockerenv")
 
 class DatabaseManager:
-    def __init__(self, host="localhost", user="root", password="root", database="cipherstorm"):
+    def __init__(self, host="localhost", user="root", password=input("[*] MySQL Server password (Press enter if nothing): "), database="cipherstorm"):
         self.host = host
         
         if in_docker() == True:
@@ -19,12 +19,6 @@ class DatabaseManager:
             
         self.user = user
         self.password = password
-        
-        if platform.system() == "Windows":
-            self.password = ""
-        else:
-            pass
-        
         self.database = database
         self.initialize_database()
     
@@ -56,12 +50,11 @@ class DatabaseManager:
             raise
 
     def _create_tables(self):
-        """Create users and people tables in MySQL"""
+        """jah wtf this much tables :("""
         try:
             conn = self.get_connection()
             cursor = conn.cursor()
 
-            # Users table
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -97,6 +90,16 @@ class DatabaseManager:
                     FOREIGN KEY (person_id) REFERENCES people(id) ON DELETE CASCADE
                 )
             ''')
+
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS api_keys (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    label VARCHAR(255),
+                    api_key TEXT NOT NULL,
+                    administrator BOOLEAN DEFAULT FALSE
+                )
+            ''')
+            # Administrator = accessing everything like an administrator account, as default its false.
 
             conn.commit()
             print(f"{Fore.GREEN}[+] Tables created successfully.{Style.RESET_ALL}")
@@ -269,7 +272,7 @@ class DatabaseManager:
             # Insert predator
             cursor.execute('''
                 INSERT INTO people (name, address, phone, email, ipaddress, label, description, convicted, socials)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (name, address, phone, email, ipaddress, label, description, int(convicted), socials))
 
             person_id = cursor.lastrowid  # get the new predator's ID
@@ -423,3 +426,90 @@ class DatabaseManager:
         except Error as e:
             print(f"{Fore.RED}[-] Error fetching MySQL users: {e}{Style.RESET_ALL}")
             return []
+    
+    '''
+    -------------------
+    API FUNCTIONS
+    -------------------
+    '''
+    
+    def get_all_apikeys(self):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM api_keys")
+            apikeys = cursor.fetchall()
+            conn.close()
+            keys = []
+            for row in apikeys:
+                keys.append({
+                    'id': row[0],
+                    'label': row[1],
+                    'api_key': row[2],
+                    'administrator': row[3]
+                })
+            return keys
+        except Error as e:
+            print(f"[-] Error has occured: {e}")
+    
+    def validate_api_key(self, api_key):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT id FROM api_keys WHERE api_key=%s", (api_key,))
+            result = cursor.fetchone()
+            conn.close()
+            # Returns True if a matching API key exists
+            return result is not None
+        except Error as e:
+            print(f"[-] Error has occured {e}")
+            return False
+
+    def validate_api_administration(self, api_key):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT administrator FROM api_keys WHERE api_key=%s", (api_key,))
+            result = cursor.fetchone()
+            conn.close()
+
+            if result and result["administrator"] == 1:
+                return True
+                
+            return False
+        except Error as e:
+            print(f"[-] Error has Occurred: {e}")
+            return False
+
+        
+    def add_apikey(self, label=None, key=None, administrator=False):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO api_keys (label, api_key, administrator)
+                VALUES (%s, %s, %s)
+            ''', (label, key, administrator))
+            
+            key_id = cursor.lastrowid
+            
+            conn.commit()
+            conn.close()
+            return True
+        except Error as e:
+            print(f"{Fore.RED}[-] Error has occurred: {e}{Style.RESET_ALL}")
+            return False
+
+    def delete_apikey(self, api_id):
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+
+            cursor.execute('DELETE FROM api_keys WHERE id = %s', (api_id,))
+            conn.commit()
+            conn.close()
+            return True
+        except Error as e:
+            print(f"{Fore.RED}[-] Error has occurred: {e}{Style.RESET_ALL}")
+            return False
