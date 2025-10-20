@@ -49,6 +49,8 @@ sudo systemctl disable mysql
 > [!NOTE]
 > CipherStorm may start without mysql starting up, wait until mysql is done and listening for connections and then start
 > CipherStorm by ```docker start cipherstorm```
+>
+> Another note is that phpMyAdmin will be installed as well to manage the mysql server and the database.
 
 # Login info
 - USER: admin
