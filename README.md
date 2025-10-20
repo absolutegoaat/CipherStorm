@@ -1,5 +1,15 @@
 # CipherStorm
-Pedator Database Manager
+People database mainly used for catching criminals and storing descriptions of who and what they are, This is used to store predators, racist, terrorists, and other people who are dangerous to society or online safety.
+
+CipherStorm makes it easy to look back at the information you've stored and find the information you need at a moment's notice.
+
+# Features
+- MySQL database
+- Stores Names, Addresses, Phone Numbers, Descriptions, IP Addresses, Conviction, and labels to quickly describe someone with one word. (More to come)
+- Stores images
+- An API for developers who want to use CipherStorm with out the hassle of getting MySQL Credentials from an Administrator.
+- Easy to use
+- Easy to setup
 
 # Setup
 ## Windows
@@ -43,3 +53,9 @@ sudo systemctl disable mysql
 # Login info
 - USER: admin
 - PASS: admin123
+
+# Issues
+If you have any issues, don't hessitate to open an issue, And i'll or someone will get to you to help you out.
+
+# Contributing
+If you want to contribute, feel free to fork this project and open a PR, and i'll review it and merge it if it's good.
