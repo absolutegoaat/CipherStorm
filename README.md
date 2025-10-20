@@ -1,7 +1,5 @@
 # CipherStorm
 Pedator Database Manager
-</br>
-NOT FOR THE PUBLIC
 
 # Setup
 ## Windows
