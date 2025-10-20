@@ -4,12 +4,19 @@ import hashlib
 from colorama import Fore, Style
 import platform
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def in_docker():
     return os.path.exists("/.dockerenv")
 
+dbhost = os.getenv("DB_HOST", "localhost") # set localhost if db_host not set
+dbuser = os.getenv("DB_USER", "root") # set root if db_user not set
+dbpassword = os.getenv("DB_PASSWORD", "") # set empty string if db_password not set
+
 class DatabaseManager:
-    def __init__(self, host="localhost", user="root", password=input("[*] MySQL Server password (Press enter if nothing): "), database="cipherstorm"):
+    def __init__(self, host=dbhost, user=dbuser, password=dbpassword, database="cipherstorm"):
         self.host = host
         
         if in_docker() == True:
