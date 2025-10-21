@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 from database import DatabaseManager
 from api.auth import require_api_key # makes auth for the API
 from api.auth import require_administrator
+import request
 
 api = Blueprint("people", __name__)
 db = DatabaseManager()
@@ -38,3 +39,10 @@ def get_person(person_id):
         return jsonify({
             'message': 'Person is not found in database.'
         }), 404
+
+@api.route("/api/people/add", methods=['POST'])
+@require_api_key
+def add_person():
+    data = request.get_json()
+    
+    # add all data to import from that json, ex. name = data.get('name')
