@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from database import DatabaseManager
 from api.auth import require_api_key # makes auth for the API
 from api.auth import require_administrator
@@ -67,9 +67,7 @@ def add_user():
     password = data.get('password')
     is_admin = data.get('is_admin')
 
-    if is_admin == 1:
-        is_admin = True
-    else:
-        is_admin = False
-
     db.add_user(username, password, is_admin)
+    
+if __name__ == '__main__':
+    print("Please run index.py")
