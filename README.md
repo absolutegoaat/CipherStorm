@@ -61,3 +61,7 @@ If you have any issues, don't hessitate to open an issue, And i'll or someone wi
 
 # Contributing
 If you want to contribute, feel free to fork this project and open a PR, and i'll review it and merge it if it's good.
+
+# Authors
+- [@absolutegoaat](https://github.com/absolutegoaat)
+- [@NullClock](https://github.com/nullclock)
