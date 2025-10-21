@@ -77,7 +77,7 @@ Example client JSON input:
     "phone": "555-123-4567",
     "email": "example@email.com",
     "ipaddress": "127.0.0.1",
-    "label": "Dangerous", // this can be any other works by adding a comma like "armed, dangerous"
+    "label": "Dangerous", // this can be any other words by adding a comma like "armed, dangerous"
     "description": "This person is dangerous",
     "convicted": 1, // 1 = True, 0 = False 
     "socials": "https://twitter.com/johndoe"
