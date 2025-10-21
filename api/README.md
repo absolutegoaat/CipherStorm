@@ -56,7 +56,7 @@ if __name__ == "__main__":
 This endpoint will validate if your token is valid or not.
 
 # /api/users
-```Method: GET```
+```Method:  GET (Administrator)```
 
 Gets all users in the database.
 
@@ -110,7 +110,8 @@ JSON Client input example:
 ```json
 {
     "username": "ralsei",
-    "password": "the-fun-gang!123"
+    "password": "the-fun-gang!123",
+    "is_admin": 1 // 1 = True, 0 = False
 }
 ```
 

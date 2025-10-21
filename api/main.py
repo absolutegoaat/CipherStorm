@@ -66,3 +66,11 @@ def add_user():
     
     username = data.get('username')
     password = data.get('password')
+    is_admin = data.get('is_admin')
+
+    if is_admin == 1:
+        is_admin = True
+    else:
+        is_admin = False
+
+    db.add_user(username, password, is_admin)
