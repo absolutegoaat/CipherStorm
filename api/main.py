@@ -57,3 +57,12 @@ def add_person():
     
     
     # add all data to import from that json, ex. name = data.get('name')
+
+@api.route("/api/users/add", methods=["POST"])
+@require_api_key
+@require_administrator
+def add_user():
+    data = request.get_json()
+    
+    username = data.get('username')
+    password = data.get('password')

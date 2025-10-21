@@ -90,3 +90,20 @@ Example client JSON input:
 > ```sql
 > id INT AUTO_INCREMENT PRIMARY KEY
 > ```
+
+# /api/users/add
+```Method: POST (Administrator)```
+
+Like people/add but its for users of cipherstorm
+
+JSON Client input example:
+
+```json
+{
+    "username": "ralsei",
+    "password": "the-fun-gang!123"
+}
+```
+
+> [!NOTE]
+> Passwords are hashed using bcrypt, so you don't need to worry about that.
