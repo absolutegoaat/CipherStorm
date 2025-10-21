@@ -2,7 +2,6 @@ from flask import Blueprint, jsonify
 from database import DatabaseManager
 from api.auth import require_api_key # makes auth for the API
 from api.auth import require_administrator
-import request
 
 api = Blueprint("people", __name__)
 db = DatabaseManager()
