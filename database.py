@@ -118,23 +118,27 @@ class DatabaseManager:
             raise
 
     def _create_default_users(self, cursor):
-        """Insert default admin and test users"""
-        admin_password_hash = self._hash_password("admin123")
-        cursor.execute('''
-            INSERT IGNORE INTO users (username, password_hash, is_admin)
-            VALUES (%s, %s, %s)
-        ''', ('admin', admin_password_hash, 1))
+        users = [
+            ('admin', 'admin123', 1),
+            ('testuser', 'user123', 0),
+        ]
 
-        user_password_hash = self._hash_password("user123")
-        cursor.execute('''
-            INSERT IGNORE INTO users (username, password_hash, is_admin)
-            VALUES (%s, %s, %s)
-        ''', ('testuser', user_password_hash, 0))
+        for username, password, is_admin in users:
+            cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+            exists = cursor.fetchone()
 
-        print("Default users created:")
+            if not exists:
+                password_hash = self._hash_password(password)
+                cursor.execute('''
+                    INSERT INTO users (username, password_hash, is_admin)
+                    VALUES (%s, %s, %s)
+                ''', (username, password_hash, is_admin))
+
+        print("Default users created or already present:")
         print("admin (password: admin123) - Admin")
         print("testuser (password: user123) - Regular user")
         print(f"{Fore.YELLOW}[+] Use admin account to manage other users.{Style.RESET_ALL}")
+
 
     def _hash_password(self, password):
         return hashlib.sha256(password.encode()).hexdigest()

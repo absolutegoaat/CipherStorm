@@ -69,5 +69,7 @@ def add_user():
 
     db.add_user(username, password, is_admin)
     
+    return jsonify({"message": f"Successfully added {username}"}), 200
+        
 if __name__ == '__main__':
     print("Please run index.py")
