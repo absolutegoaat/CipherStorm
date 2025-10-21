@@ -44,5 +44,16 @@ def get_person(person_id):
 @require_api_key
 def add_person():
     data = request.get_json()
+
+    name = data.get('name')
+    address = data.get('address')
+    phone = data.get('phone')
+    email = data.get('email')
+    ipaddress = data.get('ipaddress')
+    label = data.get('label')
+    description = data.get('description')
+    convicted = data.get('convicted') # int
+    socials = data.get('socials')
+    
     
     # add all data to import from that json, ex. name = data.get('name')

@@ -6,6 +6,19 @@ submit an issue on github! :D
 
 ![ralsei](https://c.tenor.com/a67qt4MuklQAAAAM/ralsei-dancing-ralsei.gif)
 
+# Table Of Contents
+- [Authentication](#authentication)
+
+**GET API Endpoints**
+
+- [/api/token_validate](#apitoken_validate)
+- [/api/people](#apipeople)
+- [/api/people/{id}](#apipeopleid)
+
+**POST API Endpoints**
+
+- [/api/people/add](#apipeopleadd)
+
 # Authentication
 In order to authenticate to the server, you'll have to create a
 api token thru an administrator account, after that, authenticate 
@@ -49,3 +62,28 @@ you'll be able to get everyone on the database.
 
 You can pull specific people from the database instead of 
 grabbing the entire database.
+
+# /api/people/add
+```Method: POST```
+
+You can add people to the database by using this endpoint.
+
+Example client JSON input:
+
+```json
+{
+    "name": "John Doe",
+    "address": "123 Main St, Anytown, USA",
+    "phone": "555-123-4567",
+    "email": "example@email.com",
+    "ipaddress": "127.0.0.1",
+    "label": "Dangerous", // this can be any other works by adding a comma like "armed, dangerous"
+    "description": "This person is dangerous",
+    "convicted": 1, // 1 = True, 0 = False 
+    "socials": "https://twitter.com/johndoe"
+}
+```
+
+> [!NOTE]
+> "convicted" is a boolean value, so you can only use 1 or 0.
+> ID is not editable as MySQL chooses the ID for you. 
