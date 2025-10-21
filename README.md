@@ -1,4 +1,4 @@
-# CipherStorm
+# 🌊 CipherStorm
 People database mainly used for catching criminals and storing descriptions of who and what they are, This is used to store predators, racist, terrorists, and other people who are dangerous to society or online safety.
 
 CipherStorm makes it easy to look back at the information you've stored and find the information you need at a moment's notice.
