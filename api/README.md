@@ -86,4 +86,4 @@ Example client JSON input:
 
 > [!NOTE]
 > "convicted" is a boolean value, so you can only use 1 or 0.
-> ID is not editable as MySQL chooses the ID for you. 
+> If you were asking to yourself, ID is not editable as MySQL chooses the ID for you. 
