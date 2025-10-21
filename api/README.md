@@ -7,17 +7,21 @@ submit an issue on github! :D
 ![ralsei](https://c.tenor.com/a67qt4MuklQAAAAM/ralsei-dancing-ralsei.gif)
 
 # Table Of Contents
+**Home**
+
 - [Authentication](#authentication)
 
 **GET API Endpoints**
 
 - [/api/token_validate](#apitoken_validate)
+- [/api/users](#apiusers)
 - [/api/people](#apipeople)
 - [/api/people/{id}](#apipeopleid)
 
 **POST API Endpoints**
 
 - [/api/people/add](#apipeopleadd)
+- [/api/users/add](#apiusersadd)
 
 # Authentication
 In order to authenticate to the server, you'll have to create a
@@ -50,6 +54,11 @@ if __name__ == "__main__":
 ```Method: GET```
 
 This endpoint will validate if your token is valid or not.
+
+# /api/users
+```Method: GET```
+
+Gets all users in the database.
 
 # /api/people
 ```Method: GET```
