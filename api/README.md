@@ -77,7 +77,7 @@ grabbing the entire database.
 
 You can add people to the database by using this endpoint.
 
-Example client JSON input:
+Example client JSON body input:
 
 ```json
 {
@@ -99,6 +99,8 @@ Example client JSON input:
 > ```sql
 > id INT AUTO_INCREMENT PRIMARY KEY
 > ```
+
+i dont know how this looks in python
 
 # /api/users/add
 ```Method: POST (Administrator)```
