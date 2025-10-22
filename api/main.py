@@ -54,8 +54,9 @@ def add_person():
     convicted = data.get('convicted') # int
     socials = data.get('socials')
     
-    
-    # add all data to import from that json, ex. name = data.get('name')
+    db.add_person(name, address, phone, email, ipaddress, label, description, convicted, socials)
+
+    return jsonify({"message": f"Successfully added {name}."}), 200
 
 @api.route("/api/users/add", methods=["POST"])
 @require_api_key
@@ -69,7 +70,7 @@ def add_user():
 
     db.add_user(username, password, is_admin)
     
-    return jsonify({"message": f"Successfully added {username}"}), 200
+    return jsonify({"message": f"Successfully added {username}."}), 200
         
 if __name__ == '__main__':
     print("Please run index.py")
