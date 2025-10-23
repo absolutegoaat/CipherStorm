@@ -6,6 +6,23 @@ submit an issue on github! :D
 
 ![ralsei](https://c.tenor.com/a67qt4MuklQAAAAM/ralsei-dancing-ralsei.gif)
 
+# Table Of Contents
+**Home**
+
+- [Authentication](#authentication)
+
+**GET API Endpoints**
+
+- [/api/token_validate](#apitoken_validate)
+- [/api/users](#apiusers)
+- [/api/people](#apipeople)
+- [/api/people/{id}](#apipeopleid)
+
+**POST API Endpoints**
+
+- [/api/people/add](#apipeopleadd)
+- [/api/users/add](#apiusersadd)
+
 # Authentication
 In order to authenticate to the server, you'll have to create a
 api token thru an administrator account, after that, authenticate 
@@ -38,6 +55,11 @@ if __name__ == "__main__":
 
 This endpoint will validate if your token is valid or not.
 
+# /api/users
+```Method:  GET (Administrator)```
+
+Gets all users in the database.
+
 # /api/people
 ```Method: GET```
 
@@ -49,3 +71,51 @@ you'll be able to get everyone on the database.
 
 You can pull specific people from the database instead of 
 grabbing the entire database.
+
+# /api/people/add
+```Method: POST```
+
+You can add people to the database by using this endpoint.
+
+Example client JSON body input:
+
+```json
+{
+    "name": "John Doe",
+    "address": "123 Main St, Anytown, USA",
+    "phone": "555-123-4567",
+    "email": "example@email.com",
+    "ipaddress": "127.0.0.1",
+    "label": "Dangerous", // this can be any other words by adding a comma like "armed, dangerous"
+    "description": "This person is dangerous",
+    "convicted": 1, // 1 = True, 0 = False 
+    "socials": "https://twitter.com/johndoe"
+}
+```
+
+> [!NOTE]
+> "convicted" is a boolean value, so you can only use 1 or 0.
+> If you were asking to yourself, ID is not editable as the MySQL table chooses the ID for you.
+> ```sql
+> id INT AUTO_INCREMENT PRIMARY KEY
+> ```
+
+i dont know how this looks in python
+
+# /api/users/add
+```Method: POST (Administrator)```
+
+Like people/add but its for users of cipherstorm
+
+JSON Client input example:
+
+```json
+{
+    "username": "ralsei",
+    "password": "the-fun-gang!123",
+    "is_admin": 1 // 1 = True, 0 = False
+}
+```
+
+> [!NOTE]
+> Passwords are hashed using bcrypt, so you don't need to worry about that.

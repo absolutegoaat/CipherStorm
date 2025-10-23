@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from database import DatabaseManager
 from api.auth import require_api_key # makes auth for the API
 from api.auth import require_administrator
@@ -38,3 +38,39 @@ def get_person(person_id):
         return jsonify({
             'message': 'Person is not found in database.'
         }), 404
+
+@api.route("/api/people/add", methods=['POST'])
+@require_api_key
+def add_person():
+    data = request.get_json()
+
+    name = data.get('name')
+    address = data.get('address')
+    phone = data.get('phone')
+    email = data.get('email')
+    ipaddress = data.get('ipaddress')
+    label = data.get('label')
+    description = data.get('description')
+    convicted = data.get('convicted') # int
+    socials = data.get('socials')
+    
+    db.add_person(name, address, phone, email, ipaddress, label, description, convicted, socials)
+
+    return jsonify({"message": f"Successfully added {name}."}), 200
+
+@api.route("/api/users/add", methods=["POST"])
+@require_api_key
+@require_administrator
+def add_user():
+    data = request.get_json()
+    
+    username = data.get('username')
+    password = data.get('password')
+    is_admin = data.get('is_admin')
+
+    db.add_user(username, password, is_admin)
+    
+    return jsonify({"message": f"Successfully added {username}."}), 200
+        
+if __name__ == '__main__':
+    print("Please run index.py")
