@@ -3,6 +3,8 @@ People database mainly used for catching criminals and storing descriptions of w
 
 CipherStorm makes it easy to look back at the information you've stored and find the information you need at a moment's notice.
 
+As of right now, im currently working on a desktop version of cipherstorm called cipherview, it's almost done and will be released soon.
+
 # Features
 - MySQL database
 - Stores Names, Addresses, Phone Numbers, Descriptions, IP Addresses, Conviction, and labels to quickly describe someone with one word. (More to come)
