@@ -60,7 +60,7 @@ sudo systemctl disable mysql
 - PASS: admin123
 
 # Issues
-If you have any issues, don't hessitate to open an issue, And i'll or someone will get to you to help you out.
+If you have any issues, don't hesitate to open an issue, And i'll or someone will get to you to help you out.
 
 # Contributing
 If you want to contribute, feel free to fork this project and open a PR, and i'll review it and merge it if it's good.
