@@ -69,3 +69,8 @@ If you want to contribute, feel free to fork this project and open a PR, and i'l
 # Authors
 - [@absolutegoaat](https://github.com/absolutegoaat)
 - [@NullClock](https://github.com/nullclock)
+
+# Screenshots
+![1](https://files.catbox.moe/s6v0i6.png)
+![2](https://files.catbox.moe/qxvw2c.png)
+![3](https://files.catbox.moe/vu3948.png)
